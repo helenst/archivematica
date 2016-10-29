@@ -25,9 +25,10 @@ from annoying.functions import get_object_or_None
 import argparse
 import logging
 import os
-import slumber
 import sys
 from uuid import uuid4
+
+import requests
 
 # storageService requires Django to be set up
 import django
@@ -97,7 +98,7 @@ def store_aip(aip_destination_uri, aip_path, sip_uuid, sip_name, sip_type):
             api.file(sip_uuid).get()
             related_package_uuid = sip_uuid
             print('Parent AIP exists so relationship can be created.')
-        except slumber.exceptions.HttpClientError:
+        except requests.exceptions.RequestException:
             UnitVariable.objects.create(unittype='SIP', unituuid=sip_uuid, variable='relatedPackage', variablevalue=uuid)
             print('Noting DIP UUID {} related to AIP so relationship can be created when AIP is stored.'.format(uuid))
     else:
