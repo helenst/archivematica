@@ -32,6 +32,7 @@ There are many ways to contribute: writing tutorials or blog posts about your ex
     - [Every commit should work](#every-commit-should-work)
     - [Commit summaries should be concise](#commit-summaries-should-be-concise)
     - [Commit messages should be as detailed as they need to be (and no more)](#commit-messages-should-be-as-detailed-as-they-need-to-be-and-no-more)
+  - [Checklist](#checklist)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -262,3 +263,15 @@ The commit message is your place to clarify the justification for a change.
 While there's no need to rehash anything that code comments already say, if there's more detail that helps a reader understand *why* a change was made, be as verbose as you need to!
 Remember: future-you (or another developer) will read this when going through the commit history to understand why a change was made.
 Make their life easier.
+
+### Checklist
+
+This is for easy reference when preparing or reviewing a pull request.
+
+* Python 2 & Python 3 compatible
+* Follows PEP8
+* Documentation - docstrings, comments & user facing
+* Tests
+* Clear commit history
+* All user-facing strings are translated
+
