@@ -131,79 +131,10 @@
     </div>
   </script>
 
-  <script type="text/template" id="directory-browser-template">
-    <div id="directory-browser-tab">Directory browser (<a href="#">Close</a>)</div>
-    <div id="directory-browser-content"></div>
-  </script>
-
   <script type="text/template" id="status-template">
     <div id="status-bullet">
       <span>Initializing...</span>
       <img src="{{ STATIC_URL }}images/bullet_delete.png" />
-    </div>
-  </script>
-
-  <!-- Transfer component form layout templates -->
-  <script type="text/template" id='transfer-component-layout'>
-    <div id="transfer-component-form">
-      <div class="activity-indicator">
-        <img src='{{STATIC_URL}}images/ajax-loader.gif' />
-      </div>
-      <div style="float:left">
-        <form class="form-inline">
-          <div id='transfer-type-container'>
-            <select type='text' id='transfer-type' class="form-control">
-              <option value='standard'>Standard</option>
-              <option value='unzipped bag'>Unzipped Bag</option>
-              <option value='zipped bag'>Zipped Bag</option>
-              {% if not hide_features.dspace %}
-              <option value='dspace'>DSpace</option>
-              {% endif %}
-              {% comment 'Disabled until maildir is better supported' %}
-              <option value='maildir'>Maildir</option>
-              {% endcomment %}
-              <option value='disk image'>Disk Image</option>
-            </select>
-            <div class="help-block">Type</div>
-          </div>
-          <div id='transfer-name-container'>
-            <input type='text' id='transfer-name' class="form-control"></input>
-            <div class="help-block">Transfer name</div>
-          </div>
-          <div style="float:left;">
-            <input type='text' id='transfer-accession-number' class="form-control"></input>
-            <div class="help-block">TMS Object ID</div>
-          </div>
-        </form>
-      </div>
-      <div id="transfer_paths_area">
-        <%= transfer_paths %>
-      </div>
-    </div>
-    <br clear='all'/>
-  </script>
-
-  <script type="text/template" id='transfer-component-path-item'>
-    <div id='transfer-component-path-item-<%= path_counter %>'>
-      <span class="transfer_path" id="<%= location_path %>"><%= path %></span>
-      <span class="transfer_path_icons">
-        <span class="transfer_path_edit_icon"><img src="{{STATIC_URL}}images/table_edit.png" /></span>
-        <span class="transfer_path_delete_icon"><img src="{{STATIC_URL}}images/delete.png" /></span>
-      </span>
-    </div>
-  </script>
-
-  <!-- File explorer templates -->
-
-  <script type="text/template" id='template-dir-level'>
-    <div class="backbone-file-explorer-level"></div>
-  </script>
-
-  <script type="text/template" id='template-dir-entry'>
-    <div class="backbone-file-explorer-entry" style='clear:both'>
-      <span class="backbone-file-explorer-directory_icon_button"></span>
-      <span class="backbone-file-explorer-directory_entry_name"><%= name %> <i><%= extra %></i></span>
-      <span class="backbone-file-explorer-directory_entry_actions"></span>
     </div>
   </script>
 
