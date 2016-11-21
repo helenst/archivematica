@@ -32316,7 +32316,7 @@
 	var angular=window.angular,ngModule;
 	try {ngModule=angular.module(["ng"])}
 	catch(e){ngModule=angular.module("ng",[])}
-	var v1="<div ng-controller=\"HeaderController as vm\"> <div class=\"row\" id=\"transfer-browser-form\"> <div class=\"col-xs-3\"> <select class=\"form-control\" ng-model=\"vm.transfer.type\" ng-disabled=\"vm.transfer.components.length > 0\"> <option value=\"standard\" selected=\"selected\">Standard</option> <option value=\"unzipped bag\">Unzipped Bag</option> <option value=\"zipped bag\">Zipped bag</option> <option value=\"dspace\">DSpace</option> <option value=\"disk image\">Disk Image</option> </select> <div class=\"help-block\">Transfer type</div> </div> <div class=\"col-xs-3\" ng-if=\"vm.transfer.type !== 'zipped bag'\"> <input class=\"form-control\" ng-model=\"vm.transfer.name\"/> <div class=\"help-block\">Transfer name</div> </div> <div class=\"col-xs-2\"> <input class=\"form-control\" ng-model=\"vm.transfer.accession\"/> <div class=\"help-block\">Accession no.</div> </div> <div class=\"col-xs-1\"> <button type=\"submit\" class=\"btn btn-default\" data-toggle=\"collapse\" data-target=\"#transfer_browse_tree\" aria-expanded=\"false\" aria-controls=\"transfer_browse_tree\"> Browse </button> </div> <div class=\"col-xs-2\"> <button type=\"submit\" class=\"btn btn-success\" ng-disabled=\"!vm.enable_submit_button()\" ng-click=\"vm.transfer.start()\">Start transfer</button> </div> <div class=\"col-xs-1\"> <button type=\"submit\" class=\"btn btn-default\" ng-if=\"vm.transfer.type == 'disk image'\" ng-click=\"vm.add_next_metadata()\" title=\"Metadata entered in this form will be associated with the next component added to this transfer. Data will not be used if no component is added after the form is saved.\"> Add next </button> </div> </div>  <div id=\"path_container\"> <div ng-repeat=\"component in vm.transfer.components\" id=\"transfer-component-path-item-{{ $index + 1 }}\"> <span class=\"transfer_path\">{{ component.path }}</span>\n<span class=\"transfer_path_icons\"> <span ng-if=\"vm.transfer.type == 'disk image'\" class=\"transfer_path_edit_icon\" ng-click=\"vm.open_edit_page(component)\"> <img src=\"/media/images/table_edit.png\"> </span>\n<span class=\"transfer_path_delete_icon\" ng-click=\"vm.remove_component(component)\"> <img src=\"/media/images/delete.png\"> </span> </span> </div> </div> </div> <div ng-controller=\"BrowseController as vm\" class=\"collapse\" id=\"transfer_browse_tree\"> <select class=\"form-control\" ng-model=\"vm.source_location\" ng-change=\"vm.browse(vm.source_location)\"> <option ng-repeat=\"(location_uuid, location) in vm.source_locations\" value=\"{{ location_uuid }}\">{{ location.description }}</option> </select> <div class=\"well well-sm transfer-tree-container\"> <treecontrol class=\"tree-classic\" tree-model=\"vm.data\" options=\"vm.options\" selected-node=\"vm.selected\" on-node-toggle=\"vm.on_toggle(node, expanded)\"> <span ng-class=\"{'disabled-file': !vm.file_can_be_added(node)}\"> {{ node.title }} ({{ node.properties.display_string }}) </span> </treecontrol> </div>  <button type=\"submit\" class=\"btn btn-primary pull-right\" ng-click=\"vm.transfer.add_component(vm.selected)\" ng-disabled=\"!vm.selected || !vm.file_can_be_added(vm.selected)\"> Add </button> </div>";
+	var v1="<div ng-controller=\"HeaderController as vm\"> <div class=\"row\" id=\"transfer-browser-form\"> <div class=\"col-xs-3\"> <select class=\"form-control\" ng-model=\"vm.transfer.type\" ng-disabled=\"vm.transfer.components.length > 0\"> <option value=\"standard\" selected=\"selected\">{{ \"Standard\" | translate }}</option> <option value=\"unzipped bag\">{{ \"Unzipped bag\" | translate }}</option> <option value=\"zipped bag\">{{ \"Zipped bag\" | translate }}</option> <option value=\"dspace\">{{ \"DSpace\" | translate }}</option> <option value=\"disk image\">{{ \"Disk image\" | translate }}</option> </select> <div class=\"help-block\">{{ \"Transfer type\" | translate }}</div> </div> <div class=\"col-xs-3\" ng-if=\"vm.transfer.type !== 'zipped bag'\"> <input class=\"form-control\" ng-model=\"vm.transfer.name\"/> <div class=\"help-block\">{{ \"Transfer name\" | translate }}</div> </div> <div class=\"col-xs-2\"> <input class=\"form-control\" ng-model=\"vm.transfer.accession\"/> <div class=\"help-block\">{{ \"Accession no.\" | translate }}</div> </div> <div class=\"col-xs-1\"> <button type=\"submit\" class=\"btn btn-default\" data-toggle=\"collapse\" data-target=\"#transfer_browse_tree\" aria-expanded=\"false\" aria-controls=\"transfer_browse_tree\"> {{ \"Browse\" | translate }} </button> </div> <div class=\"col-xs-2\"> <button type=\"submit\" class=\"btn btn-success\" ng-disabled=\"!vm.enable_submit_button()\" ng-click=\"vm.transfer.start()\">{{ \"Start transfer\" | translate }}</button> </div> <div class=\"col-xs-1\"> <button type=\"submit\" class=\"btn btn-default\" ng-if=\"vm.transfer.type == 'disk image'\" ng-click=\"vm.add_next_metadata()\" title=\"{{ 'Metadata entered in this form will be associated with the next component added to this transfer. Data will not be used if no component is added after the form is saved.' | translate }}\"> {{ \"Add next\" | translate }} </button> </div> </div>  <div id=\"path_container\"> <div ng-repeat=\"component in vm.transfer.components\" id=\"transfer-component-path-item-{{ $index + 1 }}\"> <span class=\"transfer_path\">{{ component.path }}</span>\n<span class=\"transfer_path_icons\"> <span ng-if=\"vm.transfer.type == 'disk image'\" class=\"transfer_path_edit_icon\" ng-click=\"vm.open_edit_page(component)\"> <img src=\"/media/images/table_edit.png\"> </span>\n<span class=\"transfer_path_delete_icon\" ng-click=\"vm.remove_component(component)\"> <img src=\"/media/images/delete.png\"> </span> </span> </div> </div> </div> <div ng-controller=\"BrowseController as vm\" class=\"collapse\" id=\"transfer_browse_tree\"> <select class=\"form-control\" ng-model=\"vm.source_location\" ng-change=\"vm.browse(vm.source_location)\"> <option ng-repeat=\"(location_uuid, location) in vm.source_locations\" value=\"{{ location_uuid }}\">{{ location.description }}</option> </select> <div class=\"well well-sm transfer-tree-container\"> <treecontrol class=\"tree-classic\" tree-model=\"vm.data\" options=\"vm.options\" selected-node=\"vm.selected\" on-node-toggle=\"vm.on_toggle(node, expanded)\"> <span ng-class=\"{'disabled-file': !vm.file_can_be_added(node)}\"> {{ node.title }} ({{ node.properties.display_string }}) </span> </treecontrol> </div>  <button type=\"submit\" class=\"btn btn-primary pull-right\" ng-click=\"vm.transfer.add_component(vm.selected)\" ng-disabled=\"!vm.selected || !vm.file_can_be_added(vm.selected)\"> {{ \"Add\" | translate }} </button> </div>";
 	ngModule.run(["$templateCache",function(c){c.put("front_page/content.html",v1)}]);
 	module.exports=v1;
 
@@ -32330,39 +32330,917 @@
 	  value: true
 	});
 
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	// FIXME: doing this clashes with the dashboard's global bootstrap;
+	//        we should find a better fix for this at some point.
+	// import 'bootstrap';
+
+
+	// services
+
+
+	// controllers
+
+
 	var _angular = __webpack_require__(16);
 
 	var _angular2 = _interopRequireDefault(_angular);
 
 	__webpack_require__(20);
 
-	__webpack_require__(21);
-
 	__webpack_require__(22);
 
-	__webpack_require__(28);
+	__webpack_require__(23);
+
+	__webpack_require__(24);
 
 	__webpack_require__(29);
 
-	__webpack_require__(31);
+	__webpack_require__(30);
 
 	__webpack_require__(32);
 
+	__webpack_require__(33);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// controllers
+	exports.default = _angular2.default.module('transferBrowse', ['gettext', 'restangular', 'treeControl', 'services.browse', 'services.source_locations', 'services.transfer', 'controllers.browse', 'controllers.header']).run(function ($window, gettextCatalog) {
+	  // Look up current language, fallback to English
+	  var currentLanguage;
+	  try {
+	    currentLanguage = $window.DashboarConfig.currentLanguage;
+	  } catch (err) {
+	    currentLanguage = 'en';
+	  }
+	  gettextCatalog.setCurrentLanguage(currentLanguage);
 
-	// FIXME: doing this clashes with the dashboard's global bootstrap;
-	//        we should find a better fix for this at some point.
-	// import 'bootstrap';
-	exports.default = _angular2.default.module('transferBrowse', ['restangular', 'treeControl', 'services.browse', 'services.source_locations', 'services.transfer', 'controllers.browse', 'controllers.header']).config(['RestangularProvider', function (RestangularProvider) {
+	  // Load translations
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = Object.entries(__webpack_require__(34))[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var _step$value = _slicedToArray(_step.value, 2),
+	          langCode = _step$value[0],
+	          translations = _step$value[1];
+
+	      gettextCatalog.setStrings(langCode, translations);
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+	}).config(['RestangularProvider', function (RestangularProvider) {
 	  RestangularProvider.setRequestSuffix('/');
 	}]);
 
-	// services
-
 /***/ },
 /* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(21);
+	module.exports = 'gettext';
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	/**
+	 * @ngdoc module
+	 * @name gettext
+	 * @packageName angular-gettext
+	 * @description Super simple Gettext for Angular.JS
+	 *
+	 * A sample application can be found at https://github.com/rubenv/angular-gettext-example.
+	 * This is an adaptation of the [TodoMVC](http://todomvc.com/) example. You can use this as a guideline while adding {@link angular-gettext angular-gettext} to your own application.
+	 */
+	/**
+	 * @ngdoc factory
+	 * @module gettext
+	 * @name gettextPlurals
+	 * @param {String} [langCode=en] language code
+	 * @param {Number} [n=0] number to calculate form for
+	 * @returns {Number} plural form number
+	 * @description Provides correct plural form id for the given language
+	 *
+	 * Example
+	 * ```js
+	 * gettextPlurals('ru', 10); // 1
+	 * gettextPlurals('en', 1);  // 0
+	 * gettextPlurals();         // 1
+	 * ```
+	 */
+	angular.module('gettext', []);
+	/**
+	 * @ngdoc object
+	 * @module gettext
+	 * @name gettext
+	 * @kind function
+	 * @param {String} str annotation key
+	 * @description Gettext constant function for annotating strings
+	 *
+	 * ```js
+	 * angular.module('myApp', ['gettext']).config(function(gettext) {
+	 *   /// MyApp document title
+	 *   gettext('my-app.title');
+	 *   ...
+	 * })
+	 * ```
+	 */
+	angular.module('gettext').constant('gettext', function (str) {
+	    /*
+	     * Does nothing, simply returns the input string.
+	     *
+	     * This function serves as a marker for `grunt-angular-gettext` to know that
+	     * this string should be extracted for translations.
+	     */
+	    return str;
+	});
+
+	/**
+	 * @ngdoc service
+	 * @module gettext
+	 * @name gettextCatalog
+	 * @requires gettextPlurals
+	 * @requires gettextFallbackLanguage
+	 * @requires https://docs.angularjs.org/api/ng/service/$http $http
+	 * @requires https://docs.angularjs.org/api/ng/service/$cacheFactory $cacheFactory
+	 * @requires https://docs.angularjs.org/api/ng/service/$interpolate $interpolate
+	 * @requires https://docs.angularjs.org/api/ng/service/$rootScope $rootScope
+	 * @description Provides set of method to translate stings
+	 */
+	angular.module('gettext').factory('gettextCatalog', ["gettextPlurals", "gettextFallbackLanguage", "$http", "$cacheFactory", "$interpolate", "$rootScope", function (gettextPlurals, gettextFallbackLanguage, $http, $cacheFactory, $interpolate, $rootScope) {
+	    var catalog;
+	    var noContext = '$$noContext';
+
+	    // IE8 returns UPPER CASE tags, even though the source is lower case.
+	    // This can causes the (key) string in the DOM to have a different case to
+	    // the string in the `po` files.
+	    // IE9, IE10 and IE11 reorders the attributes of tags.
+	    var test = '<span id="test" title="test" class="tested">test</span>';
+	    var isHTMLModified = (angular.element('<span>' + test + '</span>').html() !== test);
+
+	    var prefixDebug = function (string) {
+	        if (catalog.debug && catalog.currentLanguage !== catalog.baseLanguage) {
+	            return catalog.debugPrefix + string;
+	        } else {
+	            return string;
+	        }
+	    };
+
+	    var addTranslatedMarkers = function (string) {
+	        if (catalog.showTranslatedMarkers) {
+	            return catalog.translatedMarkerPrefix + string + catalog.translatedMarkerSuffix;
+	        } else {
+	            return string;
+	        }
+	    };
+
+	    function broadcastUpdated() {
+	        /**
+	         * @ngdoc event
+	         * @name gettextCatalog#gettextLanguageChanged
+	         * @eventType broadcast on $rootScope
+	         * @description Fires language change notification without any additional parameters.
+	         */
+	        $rootScope.$broadcast('gettextLanguageChanged');
+	    }
+
+	    catalog = {
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#debug
+	         * @public
+	         * @type {Boolean} false
+	         * @see gettextCatalog#debug
+	         * @description Whether or not to prefix untranslated strings with `[MISSING]:` or a custom prefix.
+	         */
+	        debug: false,
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#debugPrefix
+	         * @public
+	         * @type {String} [MISSING]:
+	         * @description Custom prefix for untranslated strings when {@link gettextCatalog#debug gettextCatalog#debug} set to `true`.
+	         */
+	        debugPrefix: '[MISSING]: ',
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#showTranslatedMarkers
+	         * @public
+	         * @type {Boolean} false
+	         * @description Whether or not to wrap all processed text with markers.
+	         *
+	         * Example output: `[Welcome]`
+	         */
+	        showTranslatedMarkers: false,
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#translatedMarkerPrefix
+	         * @public
+	         * @type {String} [
+	         * @description Custom prefix to mark strings that have been run through {@link angular-gettext angular-gettext}.
+	         */
+	        translatedMarkerPrefix: '[',
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#translatedMarkerSuffix
+	         * @public
+	         * @type {String} ]
+	         * @description Custom suffix to mark strings that have been run through {@link angular-gettext angular-gettext}.
+	         */
+	        translatedMarkerSuffix: ']',
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#strings
+	         * @private
+	         * @type {Object}
+	         * @description An object of loaded translation strings. Shouldn't be used directly.
+	         */
+	        strings: {},
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#baseLanguage
+	         * @protected
+	         * @deprecated
+	         * @since 2.0
+	         * @type {String} en
+	         * @description The default language, in which you're application is written.
+	         *
+	         * This defaults to English and it's generally a bad idea to use anything else:
+	         * if your language has different pluralization rules you'll end up with incorrect translations.
+	         */
+	        baseLanguage: 'en',
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#currentLanguage
+	         * @public
+	         * @type {String}
+	         * @description Active language.
+	         */
+	        currentLanguage: 'en',
+	        /**
+	         * @ngdoc property
+	         * @name gettextCatalog#cache
+	         * @public
+	         * @type {String} en
+	         * @description Language cache for lazy load
+	         */
+	        cache: $cacheFactory('strings'),
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#setCurrentLanguage
+	         * @public
+	         * @param {String} lang language name
+	         * @description Sets the current language and makes sure that all translations get updated correctly.
+	         */
+	        setCurrentLanguage: function (lang) {
+	            this.currentLanguage = lang;
+	            broadcastUpdated();
+	        },
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#getCurrentLanguage
+	         * @public
+	         * @returns {String} current language
+	         * @description Returns the current language.
+	         */
+	        getCurrentLanguage: function () {
+	            return this.currentLanguage;
+	        },
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#setStrings
+	         * @public
+	         * @param {String} language language name
+	         * @param {Object.<String>} strings set of strings where the key is the translation `key` and `value` is the translated text
+	         * @description Processes an object of string definitions. {@link guide:manual-setstrings More details here}.
+	         */
+	        setStrings: function (language, strings) {
+	            if (!this.strings[language]) {
+	                this.strings[language] = {};
+	            }
+
+	            var defaultPlural = gettextPlurals(language, 1);
+	            for (var key in strings) {
+	                var val = strings[key];
+
+	                if (isHTMLModified) {
+	                    // Use the DOM engine to render any HTML in the key (#131).
+	                    key = angular.element('<span>' + key + '</span>').html();
+	                }
+
+	                if (angular.isString(val) || angular.isArray(val)) {
+	                    // No context, wrap it in $$noContext.
+	                    var obj = {};
+	                    obj[noContext] = val;
+	                    val = obj;
+	                }
+
+	                // Expand single strings for each context.
+	                for (var context in val) {
+	                    var str = val[context];
+	                    if (!angular.isArray(str)) {
+	                        val[context] = [];
+	                        val[context][defaultPlural] = str;
+	                    }
+	                }
+	                this.strings[language][key] = val;
+	            }
+
+	            broadcastUpdated();
+	        },
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#getStringFormFor
+	         * @protected
+	         * @param {String} language language name
+	         * @param {String} string translation key
+	         * @param {Number=} n number to build sting form for
+	         * @param {String=} context translation key context, e.g. {@link doc:context Verb, Noun}
+	         * @returns {String|Null} translated or annotated string or null if language is not set
+	         * @description Translate a string with the given language, count and context.
+	         */
+	        getStringFormFor: function (language, string, n, context) {
+	            if (!language) {
+	                return null;
+	            }
+	            var stringTable = this.strings[language] || {};
+	            var contexts = stringTable[string] || {};
+	            var plurals = contexts[context || noContext] || [];
+	            return plurals[gettextPlurals(language, n)];
+	        },
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#getString
+	         * @public
+	         * @param {String} string translation key
+	         * @param {$rootScope.Scope=} scope scope to do interpolation against
+	         * @param {String=} context translation key context, e.g. {@link doc:context Verb, Noun}
+	         * @returns {String} translated or annotated string
+	         * @description Translate a string with the given scope and context.
+	         *
+	         * First it tries {@link gettextCatalog#currentLanguage gettextCatalog#currentLanguage} (e.g. `en-US`) then {@link gettextFallbackLanguage fallback} (e.g. `en`).
+	         *
+	         * When `scope` is supplied it uses Angular.JS interpolation, so something like this will do what you expect:
+	         * ```js
+	         * var hello = gettextCatalog.getString("Hello {{name}}!", { name: "Ruben" });
+	         * // var hello will be "Hallo Ruben!" in Dutch.
+	         * ```
+	         * Avoid using scopes - this skips interpolation and is a lot faster.
+	         */
+	        getString: function (string, scope, context) {
+	            var fallbackLanguage = gettextFallbackLanguage(this.currentLanguage);
+	            string = this.getStringFormFor(this.currentLanguage, string, 1, context) ||
+	                     this.getStringFormFor(fallbackLanguage, string, 1, context) ||
+	                     prefixDebug(string);
+	            string = scope ? $interpolate(string)(scope) : string;
+	            return addTranslatedMarkers(string);
+	        },
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#getPlural
+	         * @public
+	         * @param {Number} n number to build sting form for
+	         * @param {String} string translation key
+	         * @param {String} stringPlural plural translation key
+	         * @param {$rootScope.Scope=} scope scope to do interpolation against
+	         * @param {String=} context translation key context, e.g. {@link doc:context Verb, Noun}
+	         * @returns {String} translated or annotated string
+	         * @see {@link gettextCatalog#getString gettextCatalog#getString} for details
+	         * @description Translate a plural string with the given context.
+	         */
+	        getPlural: function (n, string, stringPlural, scope, context) {
+	            var fallbackLanguage = gettextFallbackLanguage(this.currentLanguage);
+	            string = this.getStringFormFor(this.currentLanguage, string, n, context) ||
+	                     this.getStringFormFor(fallbackLanguage, string, n, context) ||
+	                     prefixDebug(n === 1 ? string : stringPlural);
+	            if (scope) {
+	                scope.$count = n;
+	                string = $interpolate(string)(scope);
+	            }
+	            return addTranslatedMarkers(string);
+	        },
+
+	        /**
+	         * @ngdoc method
+	         * @name gettextCatalog#loadRemote
+	         * @public
+	         * @param {String} url location of the translations
+	         * @description Load a set of translation strings from a given URL.
+	         *
+	         * This should be a JSON catalog generated with [angular-gettext-tools](https://github.com/rubenv/angular-gettext-tools).
+	         * {@link guide:lazy-loading More details here}.
+	         */
+	        loadRemote: function (url) {
+	            return $http({
+	                method: 'GET',
+	                url: url,
+	                cache: catalog.cache
+	            }).then(function (response) {
+	                var data = response.data;
+	                for (var lang in data) {
+	                    catalog.setStrings(lang, data[lang]);
+	                }
+	                return response;
+	            });
+	        }
+	    };
+
+	    return catalog;
+	}]);
+
+	/**
+	 * @ngdoc directive
+	 * @module gettext
+	 * @name translate
+	 * @requires gettextCatalog
+	 * @requires gettextUtil
+	 * @requires https://docs.angularjs.org/api/ng/service/$parse $parse
+	 * @requires https://docs.angularjs.org/api/ng/service/$animate $animate
+	 * @requires https://docs.angularjs.org/api/ng/service/$compile $compile
+	 * @requires https://docs.angularjs.org/api/ng/service/$window $window
+	 * @restrict AE
+	 * @param {String} [translatePlural] plural form
+	 * @param {Number} translateN value to watch to substitute correct plural form
+	 * @param {String} translateContext context value, e.g. {@link doc:context Verb, Noun}
+	 * @description Annotates and translates text inside directive
+	 *
+	 * Full interpolation support is available in translated strings, so the following will work as expected:
+	 * ```js
+	 * <div translate>Hello {{name}}!</div>
+	 * ```
+	 *
+	 * You can also use custom context parameters while interpolating. This approach allows usage
+	 * of angular filters as well as custom logic inside your translated messages without unnecessary impact on translations.
+	 *
+	 * So for example when you have message like this:
+	 * ```js
+	 * <div translate>Last modified {{modificationDate | date:'yyyy-MM-dd HH:mm:ss Z'}} by {{author}}.</div>
+	 * ```
+	 * you will have it extracted in exact same version so it would look like this:
+	 * `Last modified {{modificationDate | date:'yyyy-MM-dd HH:mm:ss Z'}} by {{author}}`.
+	 * To start with it might be too complicated to read and handle by non technical translator. It's easy to make mistake
+	 * when copying format for example. Secondly if you decide to change format by some point of the project translation will broke
+	 * as it won't be the same string anymore.
+	 *
+	 * Instead your translator should only be concerned to place {{modificationDate}} correctly and you should have a free hand
+	 * to modify implementation details on how to present the results. This is how you can achieve the goal:
+	 * ```js
+	 * <div translate translate-params-modification-date="modificationDate | date:'yyyy-MM-dd HH:mm:ss Z'">Last modified {{modificationDate}} by {{author}}.</div>
+	 * ```
+	 *
+	 * There's a few more things worth to point out:
+	 * 1. You can use as many parameters as you want. Each parameter begins with `translate-params-` followed by snake-case parameter name.
+	 * Each parameter will be available for interpolation in camelCase manner (just like angular directive works by default).
+	 * ```js
+	 * <div translate translate-params-my-custom-param="param1" translate-params-name="name">Param {{myCustomParam}} has been changed by {{name}}.</div>
+	 * ```
+	 * 2. You can rename your variables from current scope to simple ones if you like.
+	 * ```js
+	 * <div translate translate-params-date="veryUnintuitiveNameForDate">Today's date is: {{date}}.</div>
+	 * ```
+	 * 3. You can use translate-params only for some interpolations. Rest would be treated as usual.
+	 * ```js
+	 * <div translate translate-params-cost="cost | currency">This product: {{product}} costs {{cost}}.</div>
+	 * ```
+	 */
+	angular.module('gettext').directive('translate', ["gettextCatalog", "$parse", "$animate", "$compile", "$window", "gettextUtil", function (gettextCatalog, $parse, $animate, $compile, $window, gettextUtil) {
+	    var msie = parseInt((/msie (\d+)/.exec(angular.lowercase($window.navigator.userAgent)) || [])[1], 10);
+	    var PARAMS_PREFIX = 'translateParams';
+
+	    function getCtxAttr(key) {
+	        return gettextUtil.lcFirst(key.replace(PARAMS_PREFIX, ''));
+	    }
+
+	    function handleInterpolationContext(scope, attrs, update) {
+	        var attributes = Object.keys(attrs).filter(function (key) {
+	            return gettextUtil.startsWith(key, PARAMS_PREFIX) && key !== PARAMS_PREFIX;
+	        });
+
+	        if (!attributes.length) {
+	            return null;
+	        }
+
+	        var interpolationContext = angular.extend({}, scope);
+	        var unwatchers = [];
+	        attributes.forEach(function (attribute) {
+	            var unwatch = scope.$watch(attrs[attribute], function (newVal) {
+	                var key = getCtxAttr(attribute);
+	                interpolationContext[key] = newVal;
+	                update(interpolationContext);
+	            });
+	            unwatchers.push(unwatch);
+	        });
+	        scope.$on('$destroy', function () {
+	            unwatchers.forEach(function (unwatch) {
+	                unwatch();
+	            });
+	        });
+	        return interpolationContext;
+	    }
+
+	    return {
+	        restrict: 'AE',
+	        terminal: true,
+	        compile: function compile(element, attrs) {
+	            // Validate attributes
+	            gettextUtil.assert(!attrs.translatePlural || attrs.translateN, 'translate-n', 'translate-plural');
+	            gettextUtil.assert(!attrs.translateN || attrs.translatePlural, 'translate-plural', 'translate-n');
+
+	            var msgid = gettextUtil.trim(element.html());
+	            var translatePlural = attrs.translatePlural;
+	            var translateContext = attrs.translateContext;
+
+	            if (msie <= 8) {
+	                // Workaround fix relating to angular adding a comment node to
+	                // anchors. angular/angular.js/#1949 / angular/angular.js/#2013
+	                if (msgid.slice(-13) === '<!--IE fix-->') {
+	                    msgid = msgid.slice(0, -13);
+	                }
+	            }
+
+	            return {
+	                post: function (scope, element, attrs) {
+	                    var countFn = $parse(attrs.translateN);
+	                    var pluralScope = null;
+	                    var linking = true;
+
+	                    function update(interpolationContext) {
+	                        interpolationContext = interpolationContext || null;
+
+	                        // Fetch correct translated string.
+	                        var translated;
+	                        if (translatePlural) {
+	                            scope = pluralScope || (pluralScope = scope.$new());
+	                            scope.$count = countFn(scope);
+	                            translated = gettextCatalog.getPlural(scope.$count, msgid, translatePlural, interpolationContext, translateContext);
+	                        } else {
+	                            translated = gettextCatalog.getString(msgid, interpolationContext, translateContext);
+	                        }
+	                        var oldContents = element.contents();
+
+	                        if (oldContents.length === 0){
+	                            return;
+	                        }
+
+	                        // Avoid redundant swaps
+	                        if (translated === gettextUtil.trim(oldContents.html())){
+	                            // Take care of unlinked content
+	                            if (linking){
+	                                $compile(oldContents)(scope);
+	                            }
+	                            return;
+	                        }
+
+	                        // Swap in the translation
+	                        var newWrapper = angular.element('<span>' + translated + '</span>');
+	                        $compile(newWrapper.contents())(scope);
+	                        var newContents = newWrapper.contents();
+
+	                        $animate.enter(newContents, element);
+	                        $animate.leave(oldContents);
+	                    }
+
+	                    var interpolationContext = handleInterpolationContext(scope, attrs, update);
+	                    update(interpolationContext);
+	                    linking = false;
+
+	                    if (attrs.translateN) {
+	                        scope.$watch(attrs.translateN, function () {
+	                            update(interpolationContext);
+	                        });
+	                    }
+
+	                    /**
+	                     * @ngdoc event
+	                     * @name translate#gettextLanguageChanged
+	                     * @eventType listen on scope
+	                     * @description Listens for language updates and changes translation accordingly
+	                     */
+	                    scope.$on('gettextLanguageChanged', function () {
+	                        update(interpolationContext);
+	                    });
+
+	                }
+	            };
+	        }
+	    };
+	}]);
+
+	/**
+	 * @ngdoc factory
+	 * @module gettext
+	 * @name gettextFallbackLanguage
+	 * @param {String} langCode language code
+	 * @returns {String|Null} fallback language
+	 * @description Strips regional code and returns language code only
+	 *
+	 * Example
+	 * ```js
+	 * gettextFallbackLanguage('ru');     // "null"
+	 * gettextFallbackLanguage('en_GB');  // "en"
+	 * gettextFallbackLanguage();         // null
+	 * ```
+	 */
+	angular.module("gettext").factory("gettextFallbackLanguage", function () {
+	    var cache = {};
+	    var pattern = /([^_]+)_[^_]+$/;
+
+	    return function (langCode) {
+	        if (cache[langCode]) {
+	            return cache[langCode];
+	        }
+
+	        var matches = pattern.exec(langCode);
+	        if (matches) {
+	            cache[langCode] = matches[1];
+	            return matches[1];
+	        }
+
+	        return null;
+	    };
+	});
+	/**
+	 * @ngdoc filter
+	 * @module gettext
+	 * @name translate
+	 * @requires gettextCatalog
+	 * @param {String} input translation key
+	 * @param {String} context context to evaluate key against
+	 * @returns {String} translated string or annotated key
+	 * @see {@link doc:context Verb, Noun}
+	 * @description Takes key and returns string
+	 *
+	 * Sometimes it's not an option to use an attribute (e.g. when you want to annotate an attribute value).
+	 * There's a `translate` filter available for this purpose.
+	 *
+	 * ```html
+	 * <input type="text" placeholder="{{'Username'|translate}}" />
+	 * ```
+	 * This filter does not support plural strings.
+	 *
+	 * You may want to use {@link guide:custom-annotations custom annotations} to avoid using the `translate` filter all the time. * Is
+	 */
+	angular.module('gettext').filter('translate', ["gettextCatalog", function (gettextCatalog) {
+	    function filter(input, context) {
+	        return gettextCatalog.getString(input, null, context);
+	    }
+	    filter.$stateful = true;
+	    return filter;
+	}]);
+
+	// Do not edit this file, it is autogenerated using genplurals.py!
+	angular.module("gettext").factory("gettextPlurals", function () {
+	    var languageCodes = {
+	        "pt_BR": "pt_BR",
+	        "pt-BR": "pt_BR"
+	    };
+	    return function (langCode, n) {
+	        switch (getLanguageCode(langCode)) {
+	            case "ay":  // Aymará
+	            case "bo":  // Tibetan
+	            case "cgg": // Chiga
+	            case "dz":  // Dzongkha
+	            case "fa":  // Persian
+	            case "id":  // Indonesian
+	            case "ja":  // Japanese
+	            case "jbo": // Lojban
+	            case "ka":  // Georgian
+	            case "kk":  // Kazakh
+	            case "km":  // Khmer
+	            case "ko":  // Korean
+	            case "ky":  // Kyrgyz
+	            case "lo":  // Lao
+	            case "ms":  // Malay
+	            case "my":  // Burmese
+	            case "sah": // Yakut
+	            case "su":  // Sundanese
+	            case "th":  // Thai
+	            case "tt":  // Tatar
+	            case "ug":  // Uyghur
+	            case "vi":  // Vietnamese
+	            case "wo":  // Wolof
+	            case "zh":  // Chinese
+	                // 1 form
+	                return 0;
+	            case "is":  // Icelandic
+	                // 2 forms
+	                return (n%10!=1 || n%100==11) ? 1 : 0;
+	            case "jv":  // Javanese
+	                // 2 forms
+	                return n!=0 ? 1 : 0;
+	            case "mk":  // Macedonian
+	                // 2 forms
+	                return n==1 || n%10==1 ? 0 : 1;
+	            case "ach": // Acholi
+	            case "ak":  // Akan
+	            case "am":  // Amharic
+	            case "arn": // Mapudungun
+	            case "br":  // Breton
+	            case "fil": // Filipino
+	            case "fr":  // French
+	            case "gun": // Gun
+	            case "ln":  // Lingala
+	            case "mfe": // Mauritian Creole
+	            case "mg":  // Malagasy
+	            case "mi":  // Maori
+	            case "oc":  // Occitan
+	            case "pt_BR":  // Brazilian Portuguese
+	            case "tg":  // Tajik
+	            case "ti":  // Tigrinya
+	            case "tr":  // Turkish
+	            case "uz":  // Uzbek
+	            case "wa":  // Walloon
+	            case "zh":  // Chinese
+	                // 2 forms
+	                return n>1 ? 1 : 0;
+	            case "lv":  // Latvian
+	                // 3 forms
+	                return (n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);
+	            case "lt":  // Lithuanian
+	                // 3 forms
+	                return (n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);
+	            case "be":  // Belarusian
+	            case "bs":  // Bosnian
+	            case "hr":  // Croatian
+	            case "ru":  // Russian
+	            case "sr":  // Serbian
+	            case "uk":  // Ukrainian
+	                // 3 forms
+	                return (n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
+	            case "mnk": // Mandinka
+	                // 3 forms
+	                return (n==0 ? 0 : n==1 ? 1 : 2);
+	            case "ro":  // Romanian
+	                // 3 forms
+	                return (n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);
+	            case "pl":  // Polish
+	                // 3 forms
+	                return (n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
+	            case "cs":  // Czech
+	            case "sk":  // Slovak
+	                // 3 forms
+	                return (n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;
+	            case "sl":  // Slovenian
+	                // 4 forms
+	                return (n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);
+	            case "mt":  // Maltese
+	                // 4 forms
+	                return (n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3);
+	            case "gd":  // Scottish Gaelic
+	                // 4 forms
+	                return (n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : (n > 2 && n < 20) ? 2 : 3;
+	            case "cy":  // Welsh
+	                // 4 forms
+	                return (n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;
+	            case "kw":  // Cornish
+	                // 4 forms
+	                return (n==1) ? 0 : (n==2) ? 1 : (n == 3) ? 2 : 3;
+	            case "ga":  // Irish
+	                // 5 forms
+	                return n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4;
+	            case "ar":  // Arabic
+	                // 6 forms
+	                return (n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);
+	            default: // Everything else
+	                return n != 1 ? 1 : 0;
+	        }
+	    };
+
+	    /**
+	     * Method extracts iso639-2 language code from code with locale e.g. pl_PL, en_US, etc.
+	     * If it's provided with standalone iso639-2 language code it simply returns it.
+	     * @param {String} langCode
+	     * @returns {String} iso639-2 language Code
+	     */
+	    function getLanguageCode(langCode) {
+	        if (!languageCodes[langCode]) {
+	            languageCodes[langCode] = langCode.split(/\-|_/).shift();
+	        }
+	        return languageCodes[langCode];
+	    }
+	});
+
+	/**
+	 * @ngdoc factory
+	 * @module gettext
+	 * @name gettextUtil
+	 * @description Utility service for common operations and polyfills.
+	 */
+	angular.module('gettext').factory('gettextUtil', function gettextUtil() {
+	    /**
+	     * @ngdoc method
+	     * @name gettextUtil#trim
+	     * @public
+	     * @param {string} value String to be trimmed.
+	     * @description Trim polyfill for old browsers (instead of jQuery). Based on AngularJS-v1.2.2 (angular.js#620).
+	     *
+	     * Example
+	     * ```js
+	     * gettextUtil.assert('  no blanks  '); // "no blanks"
+	     * ```
+	     */
+	    var trim = (function () {
+	        if (!String.prototype.trim) {
+	            return function (value) {
+	                return (typeof value === 'string') ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+	            };
+	        }
+	        return function (value) {
+	            return (typeof value === 'string') ? value.trim() : value;
+	        };
+	    })();
+
+	    /**
+	     * @ngdoc method
+	     * @name gettextUtil#assert
+	     * @public
+	     * @param {bool} condition condition to check
+	     * @param {String} missing name of the directive missing attribute
+	     * @param {String} found name of attribute that has been used with directive
+	     * @description Throws error if condition is not met, which means that directive was used with certain parameter
+	     * that requires another one (which is missing).
+	     *
+	     * Example
+	     * ```js
+	     * gettextUtil.assert(!attrs.translatePlural || attrs.translateN, 'translate-n', 'translate-plural');
+	     * //You should add a translate-n attribute whenever you add a translate-plural attribute.
+	     * ```
+	     */
+	    function assert(condition, missing, found) {
+	        if (!condition) {
+	            throw new Error('You should add a ' + missing + ' attribute whenever you add a ' + found + ' attribute.');
+	        }
+	    }
+
+	    /**
+	     * @ngdoc method
+	     * @name gettextUtil#startsWith
+	     * @public
+	     * @param {string} target String on which checking will occur.
+	     * @param {string} query String expected to be at the beginning of target.
+	     * @returns {boolean} Returns true if object has no ownProperties. For arrays returns true if length == 0.
+	     * @description Checks if string starts with another string.
+	     *
+	     * Example
+	     * ```js
+	     * gettextUtil.startsWith('Home sweet home.', 'Home'); //true
+	     * gettextUtil.startsWith('Home sweet home.', 'sweet'); //false
+	     * ```
+	     */
+	    function startsWith(target, query) {
+	        return target.indexOf(query) === 0;
+	    }
+
+	    /**
+	     * @ngdoc method
+	     * @name gettextUtil#lcFirst
+	     * @public
+	     * @param {string} target String to transform.
+	     * @returns {string} Strings beginning with lowercase letter.
+	     * @description Makes first letter of the string lower case
+	     *
+	     * Example
+	     * ```js
+	     * gettextUtil.lcFirst('Home Sweet Home.'); //'home Sweet Home'
+	     * gettextUtil.lcFirst('ShouldBeCamelCase.'); //'shouldBeCamelCase'
+	     * ```
+	     */
+	    function lcFirst(target) {
+	        var first = target.charAt(0).toLowerCase();
+	        return first + target.substr(1);
+	    }
+
+	    return {
+	        trim: trim,
+	        assert: assert,
+	        startsWith: startsWith,
+	        lcFirst: lcFirst
+	    };
+	});
+
+
+/***/ },
+/* 22 */
 /***/ function(module, exports) {
 
 	/* commonjs package manager support (eg componentjs) */
@@ -32783,7 +33661,7 @@
 
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports) {
 
 	/**
@@ -32794,7 +33672,7 @@
 	 */!function(){var a=angular.module("restangular",[]);a.provider("Restangular",function(){var a={};a.init=function(a,b){function c(a,b,c,d){var e={};return _.each(_.keys(d),function(f){var g=d[f];g.params=_.extend({},g.params,a.defaultRequestParams[g.method.toLowerCase()]),_.isEmpty(g.params)&&delete g.params,a.isSafe(g.method)?e[f]=function(){return b(_.extend(g,{url:c}))}:e[f]=function(a){return b(_.extend(g,{url:c,data:a}))}}),e}a.configuration=b;var d=["get","head","options","trace","getlist"];b.isSafe=function(a){return _.includes(d,a.toLowerCase())};var e=/^https?:\/\//i;b.isAbsoluteUrl=function(a){return _.isUndefined(b.absoluteUrl)||_.isNull(b.absoluteUrl)?a&&e.test(a):b.absoluteUrl},b.absoluteUrl=_.isUndefined(b.absoluteUrl)?!0:b.absoluteUrl,a.setSelfLinkAbsoluteUrl=function(a){b.absoluteUrl=a},b.baseUrl=_.isUndefined(b.baseUrl)?"":b.baseUrl,a.setBaseUrl=function(a){return b.baseUrl=/\/$/.test(a)?a.substring(0,a.length-1):a,this},b.extraFields=b.extraFields||[],a.setExtraFields=function(a){return b.extraFields=a,this},b.defaultHttpFields=b.defaultHttpFields||{},a.setDefaultHttpFields=function(a){return b.defaultHttpFields=a,this},b.withHttpValues=function(a,c){return _.defaults(c,a,b.defaultHttpFields)},b.encodeIds=_.isUndefined(b.encodeIds)?!0:b.encodeIds,a.setEncodeIds=function(a){b.encodeIds=a},b.defaultRequestParams=b.defaultRequestParams||{get:{},post:{},put:{},remove:{},common:{}},a.setDefaultRequestParams=function(a,c){var d=[],e=c||a;return _.isUndefined(c)?d.push("common"):_.isArray(a)?d=a:d.push(a),_.each(d,function(a){b.defaultRequestParams[a]=e}),this},a.requestParams=b.defaultRequestParams,b.defaultHeaders=b.defaultHeaders||{},a.setDefaultHeaders=function(c){return b.defaultHeaders=c,a.defaultHeaders=b.defaultHeaders,this},a.defaultHeaders=b.defaultHeaders,b.methodOverriders=b.methodOverriders||[],a.setMethodOverriders=function(a){var c=_.extend([],a);return b.isOverridenMethod("delete",c)&&c.push("remove"),b.methodOverriders=c,this},b.jsonp=_.isUndefined(b.jsonp)?!1:b.jsonp,a.setJsonp=function(a){b.jsonp=a},b.isOverridenMethod=function(a,c){var d=c||b.methodOverriders;return!_.isUndefined(_.find(d,function(b){return b.toLowerCase()===a.toLowerCase()}))},b.urlCreator=b.urlCreator||"path",a.setUrlCreator=function(a){if(!_.has(b.urlCreatorFactory,a))throw new Error("URL Path selected isn't valid");return b.urlCreator=a,this},b.restangularFields=b.restangularFields||{id:"id",route:"route",parentResource:"parentResource",restangularCollection:"restangularCollection",cannonicalId:"__cannonicalId",etag:"restangularEtag",selfLink:"href",get:"get",getList:"getList",put:"put",post:"post",remove:"remove",head:"head",trace:"trace",options:"options",patch:"patch",getRestangularUrl:"getRestangularUrl",getRequestedUrl:"getRequestedUrl",putElement:"putElement",addRestangularMethod:"addRestangularMethod",getParentList:"getParentList",clone:"clone",ids:"ids",httpConfig:"_$httpConfig",reqParams:"reqParams",one:"one",all:"all",several:"several",oneUrl:"oneUrl",allUrl:"allUrl",customPUT:"customPUT",customPOST:"customPOST",customDELETE:"customDELETE",customGET:"customGET",customGETLIST:"customGETLIST",customOperation:"customOperation",doPUT:"doPUT",doPOST:"doPOST",doDELETE:"doDELETE",doGET:"doGET",doGETLIST:"doGETLIST",fromServer:"fromServer",withConfig:"withConfig",withHttpConfig:"withHttpConfig",singleOne:"singleOne",plain:"plain",save:"save",restangularized:"restangularized"},a.setRestangularFields=function(a){return b.restangularFields=_.extend(b.restangularFields,a),this},b.isRestangularized=function(a){return!!a[b.restangularFields.restangularized]},b.setFieldToElem=function(a,b,c){var d=a.split("."),e=b;return _.each(_.initial(d),function(a){e[a]={},e=e[a]}),e[_.last(d)]=c,this},b.getFieldFromElem=function(a,b){var c=a.split("."),d=b;return _.each(c,function(a){d&&(d=d[a])}),angular.copy(d)},b.setIdToElem=function(a,c){return b.setFieldToElem(b.restangularFields.id,a,c),this},b.getIdFromElem=function(a){return b.getFieldFromElem(b.restangularFields.id,a)},b.isValidId=function(a){return""!==a&&!_.isUndefined(a)&&!_.isNull(a)},b.setUrlToElem=function(a,c){return b.setFieldToElem(b.restangularFields.selfLink,a,c),this},b.getUrlFromElem=function(a){return b.getFieldFromElem(b.restangularFields.selfLink,a)},b.useCannonicalId=_.isUndefined(b.useCannonicalId)?!1:b.useCannonicalId,a.setUseCannonicalId=function(a){return b.useCannonicalId=a,this},b.getCannonicalIdFromElem=function(a){var c=a[b.restangularFields.cannonicalId],d=b.isValidId(c)?c:b.getIdFromElem(a);return d},b.responseInterceptors=b.responseInterceptors||[],b.defaultResponseInterceptor=function(a){return a},b.responseExtractor=function(a,c,d,e,f,g){var h=angular.copy(b.responseInterceptors);h.push(b.defaultResponseInterceptor);var i=a;return _.each(h,function(a){i=a(i,c,d,e,f,g)}),i},a.addResponseInterceptor=function(a){return b.responseInterceptors.push(a),this},b.errorInterceptors=b.errorInterceptors||[],a.addErrorInterceptor=function(a){return b.errorInterceptors.push(a),this},a.setResponseInterceptor=a.addResponseInterceptor,a.setResponseExtractor=a.addResponseInterceptor,a.setErrorInterceptor=a.addErrorInterceptor,b.requestInterceptors=b.requestInterceptors||[],b.defaultInterceptor=function(a,b,c,d,e,f,g){return{element:a,headers:e,params:f,httpConfig:g}},b.fullRequestInterceptor=function(a,c,d,e,f,g,h){var i=angular.copy(b.requestInterceptors),j=b.defaultInterceptor(a,c,d,e,f,g,h);return _.reduce(i,function(a,b){return _.extend(a,b(a.element,c,d,e,a.headers,a.params,a.httpConfig))},j)},a.addRequestInterceptor=function(a){return b.requestInterceptors.push(function(b,c,d,e,f,g,h){return{headers:f,params:g,element:a(b,c,d,e),httpConfig:h}}),this},a.setRequestInterceptor=a.addRequestInterceptor,a.addFullRequestInterceptor=function(a){return b.requestInterceptors.push(a),this},a.setFullRequestInterceptor=a.addFullRequestInterceptor,b.onBeforeElemRestangularized=b.onBeforeElemRestangularized||function(a){return a},a.setOnBeforeElemRestangularized=function(a){return b.onBeforeElemRestangularized=a,this},a.setRestangularizePromiseInterceptor=function(a){return b.restangularizePromiseInterceptor=a,this},b.onElemRestangularized=b.onElemRestangularized||function(a){return a},a.setOnElemRestangularized=function(a){return b.onElemRestangularized=a,this},b.shouldSaveParent=b.shouldSaveParent||function(){return!0},a.setParentless=function(a){return _.isArray(a)?b.shouldSaveParent=function(b){return!_.includes(a,b)}:_.isBoolean(a)&&(b.shouldSaveParent=function(){return!a}),this},b.suffix=_.isUndefined(b.suffix)?null:b.suffix,a.setRequestSuffix=function(a){return b.suffix=a,this},b.transformers=b.transformers||{},a.addElementTransformer=function(c,d,e){var f=null,g=null;2===arguments.length?g=d:(g=e,f=d);var h=b.transformers[c];return h||(h=b.transformers[c]=[]),h.push(function(a,b){return _.isNull(f)||a===f?g(b):b}),a},a.extendCollection=function(b,c){return a.addElementTransformer(b,!0,c)},a.extendModel=function(b,c){return a.addElementTransformer(b,!1,c)},b.transformElem=function(a,c,d,e,f){if(!f&&!b.transformLocalElements&&!a[b.restangularFields.fromServer])return a;var g=b.transformers[d],h=a;return g&&_.each(g,function(a){h=a(c,h)}),b.onElemRestangularized(h,c,d,e)},b.transformLocalElements=_.isUndefined(b.transformLocalElements)?!1:b.transformLocalElements,a.setTransformOnlyServerElements=function(a){b.transformLocalElements=!a},b.fullResponse=_.isUndefined(b.fullResponse)?!1:b.fullResponse,a.setFullResponse=function(a){return b.fullResponse=a,this},b.urlCreatorFactory={};var f=function(){};f.prototype.setConfig=function(a){return this.config=a,this},f.prototype.parentsArray=function(a){for(var b=[];a;)b.push(a),a=a[this.config.restangularFields.parentResource];return b.reverse()},f.prototype.resource=function(a,d,e,f,g,h,i,j){var k=_.defaults(g||{},this.config.defaultRequestParams.common),l=_.defaults(f||{},this.config.defaultHeaders);i&&(b.isSafe(j)?l["If-None-Match"]=i:l["If-Match"]=i);var m=this.base(a);if(h){var n="";/\/$/.test(m)||(n+="/"),n+=h,m+=n}return this.config.suffix&&-1===m.indexOf(this.config.suffix,m.length-this.config.suffix.length)&&!this.config.getUrlFromElem(a)&&(m+=this.config.suffix),a[this.config.restangularFields.httpConfig]=void 0,c(this.config,d,m,{getList:this.config.withHttpValues(e,{method:"GET",params:k,headers:l}),get:this.config.withHttpValues(e,{method:"GET",params:k,headers:l}),jsonp:this.config.withHttpValues(e,{method:"jsonp",params:k,headers:l}),put:this.config.withHttpValues(e,{method:"PUT",params:k,headers:l}),post:this.config.withHttpValues(e,{method:"POST",params:k,headers:l}),remove:this.config.withHttpValues(e,{method:"DELETE",params:k,headers:l}),head:this.config.withHttpValues(e,{method:"HEAD",params:k,headers:l}),trace:this.config.withHttpValues(e,{method:"TRACE",params:k,headers:l}),options:this.config.withHttpValues(e,{method:"OPTIONS",params:k,headers:l}),patch:this.config.withHttpValues(e,{method:"PATCH",params:k,headers:l})})};var g=function(){};g.prototype=new f,g.prototype.normalizeUrl=function(a){var b=/(http[s]?:\/\/)?(.*)?/.exec(a);return b[2]=b[2].replace(/[\\\/]+/g,"/"),"undefined"!=typeof b[1]?b[1]+b[2]:b[2]},g.prototype.base=function(a){var c=this;return _.reduce(this.parentsArray(a),function(a,d){var e,f=c.config.getUrlFromElem(d);if(f){if(c.config.isAbsoluteUrl(f))return f;e=f}else if(e=d[c.config.restangularFields.route],d[c.config.restangularFields.restangularCollection]){var g=d[c.config.restangularFields.ids];g&&(e+="/"+g.join(","))}else{var h;h=c.config.useCannonicalId?c.config.getCannonicalIdFromElem(d):c.config.getIdFromElem(d),b.isValidId(h)&&!d.singleOne&&(e+="/"+(c.config.encodeIds?encodeURIComponent(h):h))}return a=a.replace(/\/$/,"")+"/"+e,c.normalizeUrl(a)},this.config.baseUrl)},g.prototype.fetchUrl=function(a,b){var c=this.base(a);return b&&(c+="/"+b),c},g.prototype.fetchRequestedUrl=function(a,c){function d(a){var b=[];for(var c in a)a.hasOwnProperty(c)&&b.push(c);return b.sort()}function e(a,b,c){for(var e=d(a),f=0;f<e.length;f++)b.call(c,a[e[f]],e[f]);return e}function f(a,b){return encodeURIComponent(a).replace(/%40/gi,"@").replace(/%3A/gi,":").replace(/%24/g,"$").replace(/%2C/gi,",").replace(/%20/g,b?"%20":"+")}var g=this.fetchUrl(a,c),h=a[b.restangularFields.reqParams];if(!h)return g+(this.config.suffix||"");var i=[];return e(h,function(a,b){null!==a&&void 0!==a&&(angular.isArray(a)||(a=[a]),angular.forEach(a,function(a){angular.isObject(a)&&(a=angular.toJson(a)),i.push(f(b)+"="+f(a))}))}),g+(this.config.suffix||"")+(-1===g.indexOf("?")?"?":"&")+i.join("&")},b.urlCreatorFactory.path=g};var b={};a.init(this,b),this.$get=["$http","$q",function(c,d){function e(b){function f(a,c,d,e,f){if(c[b.restangularFields.route]=d,c[b.restangularFields.getRestangularUrl]=_.bind(P.fetchUrl,P,c),c[b.restangularFields.getRequestedUrl]=_.bind(P.fetchRequestedUrl,P,c),c[b.restangularFields.addRestangularMethod]=_.bind(L,c),c[b.restangularFields.clone]=_.bind(r,c,c),c[b.restangularFields.reqParams]=_.isEmpty(e)?null:e,c[b.restangularFields.withHttpConfig]=_.bind(z,c),c[b.restangularFields.plain]=_.bind(p,c,c),c[b.restangularFields.restangularized]=!0,c[b.restangularFields.one]=_.bind(g,c,c),c[b.restangularFields.all]=_.bind(h,c,c),c[b.restangularFields.several]=_.bind(i,c,c),c[b.restangularFields.oneUrl]=_.bind(j,c,c),c[b.restangularFields.allUrl]=_.bind(k,c,c),c[b.restangularFields.fromServer]=!!f,a&&b.shouldSaveParent(d)){var l=b.getIdFromElem(a),m=b.getUrlFromElem(a),n=_.union(_.values(_.pick(b.restangularFields,["route","singleOne","parentResource"])),b.extraFields),o=_.pick(a,n);b.isValidId(l)&&b.setIdToElem(o,l,d),b.isValidId(m)&&b.setUrlToElem(o,m,d),c[b.restangularFields.parentResource]=o}else c[b.restangularFields.parentResource]=null;return c}function g(a,c,d,e){var f;if(_.isNumber(c)||_.isNumber(a))throw f="You're creating a Restangular entity with the number ",f+="instead of the route or the parent. For example, you can't call .one(12).",new Error(f);if(_.isUndefined(c))throw f="You're creating a Restangular entity either without the path. ",f+="For example you can't call .one(). Please check if your arguments are valid.",new Error(f);var g={};return b.setIdToElem(g,d,c),b.setFieldToElem(b.restangularFields.singleOne,g,e),s(a,g,c,!1)}function h(a,b){return t(a,[],b,!1)}function i(a,c){var d=[];return d[b.restangularFields.ids]=Array.prototype.splice.call(arguments,2),t(a,d,c,!1)}function j(a,c,d){if(!c)throw new Error("Route is mandatory when creating new Restangular objects.");var e={};return b.setUrlToElem(e,d,c),s(a,e,c,!1)}function k(a,c,d){if(!c)throw new Error("Route is mandatory when creating new Restangular objects.");var e={};return b.setUrlToElem(e,d,c),t(a,e,c,!1)}function l(a,c,d){return a.call=_.bind(m,a),a.get=_.bind(n,a),a[b.restangularFields.restangularCollection]=c,c&&(a.push=_.bind(m,a,"push")),a.$object=d,b.restangularizePromiseInterceptor&&b.restangularizePromiseInterceptor(a),a}function m(a){var c=d.defer(),e=arguments,f={};return this.then(function(b){var d=Array.prototype.slice.call(e,1),g=b[a];g.apply(b,d),f=b,c.resolve(b)}),l(c.promise,this[b.restangularFields.restangularCollection],f)}function n(a){var c=d.defer(),e={};return this.then(function(b){e=b[a],c.resolve(e)}),l(c.promise,this[b.restangularFields.restangularCollection],e)}function o(a,c,d,e){return _.extend(e,d),b.fullResponse?a.resolve(_.extend(c,{data:d})):void a.resolve(d)}function p(a){if(_.isArray(a)){var c=[];return _.each(a,function(a){c.push(b.isRestangularized(a)?p(a):a)}),c}return _.omit(a,_.values(_.omit(b.restangularFields,"id")))}function q(a){a[b.restangularFields.customOperation]=_.bind(K,a),_.each(["put","post","get","delete"],function(b){_.each(["do","custom"],function(c){var d,e="delete"===b?"remove":b,f=c+b.toUpperCase();d="put"!==e&&"post"!==e?K:function(a,b,c,d,e){return _.bind(K,this)(a,c,d,e,b)},a[f]=_.bind(d,a,e)})}),a[b.restangularFields.customGETLIST]=_.bind(y,a),a[b.restangularFields.doGETLIST]=a[b.restangularFields.customGETLIST]}function r(a,c){var d=angular.copy(a,c);return s(d[b.restangularFields.parentResource],d,d[b.restangularFields.route],!0)}function s(a,c,d,e,g,h){var i=b.onBeforeElemRestangularized(c,!1,d),j=f(a,i,d,h,e);return b.useCannonicalId&&(j[b.restangularFields.cannonicalId]=b.getIdFromElem(j)),g&&(j[b.restangularFields.getParentList]=function(){return g}),j[b.restangularFields.restangularCollection]=!1,j[b.restangularFields.get]=_.bind(C,j),j[b.restangularFields.getList]=_.bind(y,j),j[b.restangularFields.put]=_.bind(E,j),j[b.restangularFields.post]=_.bind(F,j),j[b.restangularFields.remove]=_.bind(D,j),j[b.restangularFields.head]=_.bind(G,j),j[b.restangularFields.trace]=_.bind(H,j),j[b.restangularFields.options]=_.bind(I,j),j[b.restangularFields.patch]=_.bind(J,j),j[b.restangularFields.save]=_.bind(A,j),q(j),b.transformElem(j,!1,d,O,!0)}function t(a,c,d,e,g){var h=b.onBeforeElemRestangularized(c,!0,d),i=f(a,h,d,g,e);return i[b.restangularFields.restangularCollection]=!0,i[b.restangularFields.post]=_.bind(F,i,null),i[b.restangularFields.remove]=_.bind(D,i),i[b.restangularFields.head]=_.bind(G,i),i[b.restangularFields.trace]=_.bind(H,i),i[b.restangularFields.putElement]=_.bind(w,i),i[b.restangularFields.options]=_.bind(I,i),i[b.restangularFields.patch]=_.bind(J,i),i[b.restangularFields.get]=_.bind(v,i),i[b.restangularFields.getList]=_.bind(y,i,null),q(i),b.transformElem(i,!0,d,O,!0)}function u(a,b,c){var d=t(a,b,c,!1);return _.each(d,function(b){s(a,b,c,!1)}),d}function v(a,b,c){return this.customGET(a.toString(),b,c)}function w(a,c,e){var f=this,g=this[a],h=d.defer(),i=[];return i=b.transformElem(i,!0,g[b.restangularFields.route],O),g.put(c,e).then(function(b){var c=r(f);c[a]=b,i=c,h.resolve(c)},function(a){h.reject(a)}),l(h.promise,!0,i)}function x(a,c,d,e,f,g){var h=b.responseExtractor(a,c,d,e,f,g),i=f.headers("ETag");return h&&i&&(h[b.restangularFields.etag]=i),h}function y(a,e,f){var g=this,h=d.defer(),i="getList",j=P.fetchUrl(this,a),k=a||g[b.restangularFields.route],m=b.fullRequestInterceptor(null,i,k,j,f||{},e||{},this[b.restangularFields.httpConfig]||{}),n=[];n=b.transformElem(n,!0,k,O);var p="getList";b.jsonp&&(p="jsonp");var q=function(c){var d=c.data,e=c.config.params,f=x(d,i,k,j,c,h);if((_.isUndefined(f)||""===f)&&(f=[]),!_.isArray(f))throw new Error("Response for getList SHOULD be an array and not an object or something else");var l=_.map(f,function(c){return g[b.restangularFields.restangularCollection]?s(g[b.restangularFields.parentResource],c,g[b.restangularFields.route],!0,f):s(g,c,a,!0,f)});l=_.extend(f,l),g[b.restangularFields.restangularCollection]?o(h,c,t(g[b.restangularFields.parentResource],l,g[b.restangularFields.route],!0,e),n):o(h,c,t(g,l,a,!0,e),n)};return P.resource(this,c,m.httpConfig,m.headers,m.params,a,this[b.restangularFields.etag],i)[p]().then(q,function(a){304===a.status&&g[b.restangularFields.restangularCollection]?o(h,a,g,n):_.every(b.errorInterceptors,function(b){return b(a,h,q)!==!1})&&h.reject(a)}),l(h.promise,!0,n)}function z(a){return this[b.restangularFields.httpConfig]=a,this}function A(a,c){return this[b.restangularFields.fromServer]?this[b.restangularFields.put](a,c):_.bind(B,this)("post",void 0,a,void 0,c)}function B(a,e,f,g,h){var i=this,j=d.defer(),k=f||{},m=e||this[b.restangularFields.route],n=P.fetchUrl(this,e),q=g||this,r=q[b.restangularFields.etag]||("post"!==a?this[b.restangularFields.etag]:null);_.isObject(q)&&b.isRestangularized(q)&&(q=p(q));var t=b.fullRequestInterceptor(q,a,m,n,h||{},k||{},this[b.restangularFields.httpConfig]||{}),u={};u=b.transformElem(u,!1,m,O);var v=function(c){var d=c.data,e=c.config.params,f=x(d,a,m,n,c,j);if(f){var g;"post"!==a||i[b.restangularFields.restangularCollection]?(g=s(i[b.restangularFields.parentResource],f,i[b.restangularFields.route],!0,null,e),g[b.restangularFields.singleOne]=i[b.restangularFields.singleOne],o(j,c,g,u)):(g=s(i[b.restangularFields.parentResource],f,m,!0,null,e),o(j,c,g,u))}else o(j,c,void 0,u)},w=function(c){304===c.status&&b.isSafe(a)?o(j,c,i,u):_.every(b.errorInterceptors,function(a){return a(c,j,v)!==!1})&&j.reject(c)},y=a,z=_.extend({},t.headers),A=b.isOverridenMethod(a);return A?(y="post",z=_.extend(z,{"X-HTTP-Method-Override":"remove"===a?"DELETE":a.toUpperCase()})):b.jsonp&&"get"===y&&(y="jsonp"),b.isSafe(a)?A?P.resource(this,c,t.httpConfig,z,t.params,e,r,y)[y]({}).then(v,w):P.resource(this,c,t.httpConfig,z,t.params,e,r,y)[y]().then(v,w):P.resource(this,c,t.httpConfig,z,t.params,e,r,y)[y](t.element).then(v,w),l(j.promise,!1,u)}function C(a,b){return _.bind(B,this)("get",void 0,a,void 0,b)}function D(a,b){return _.bind(B,this)("remove",void 0,a,void 0,b)}function E(a,b){return _.bind(B,this)("put",void 0,a,void 0,b)}function F(a,b,c,d){return _.bind(B,this)("post",a,c,b,d)}function G(a,b){return _.bind(B,this)("head",void 0,a,void 0,b)}function H(a,b){return _.bind(B,this)("trace",void 0,a,void 0,b)}function I(a,b){return _.bind(B,this)("options",void 0,a,void 0,b)}function J(a,b,c){return _.bind(B,this)("patch",void 0,b,a,c)}function K(a,b,c,d,e){return _.bind(B,this)(a,b,c,e,d)}function L(a,c,d,e,f,g){var h;h="getList"===c?_.bind(y,this,d):_.bind(K,this,c,d);var i=function(a,b,c){var d=_.defaults({params:a,headers:b,elem:c},{params:e,headers:f,elem:g});return h(d.params,d.headers,d.elem)};b.isSafe(c)?this[a]=i:this[a]=function(a,b,c){return i(b,c,a)}}function M(c){var d=angular.copy(_.omit(b,"configuration"));return a.init(d,d),c(d),e(d)}function N(a,c){var d=_.values(b.restangularFields),e={},f=(c||O).all(a);e.one=_.bind(g,c||O,c,a),e.post=_.bind(f.post,f),e.getList=_.bind(f.getList,f);for(var h in f)f.hasOwnProperty(h)&&_.isFunction(f[h])&&!_.includes(d,h)&&(e[h]=_.bind(f[h],f));return e}var O={},P=new b.urlCreatorFactory[b.urlCreator];return P.setConfig(b),a.init(O,b),O.copy=_.bind(r,O),O.service=_.bind(N,O),O.withConfig=_.bind(M,O),O.one=_.bind(g,O,null),O.all=_.bind(h,O,null),O.several=_.bind(i,O,null),O.oneUrl=_.bind(j,O,null),O.allUrl=_.bind(k,O,null),O.stripRestangular=_.bind(p,O),O.restangularizeElement=_.bind(s,O),O.restangularizeCollection=_.bind(u,O),O}return e(b)}]})}();
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -32809,15 +33687,15 @@
 
 	var _angular2 = _interopRequireDefault(_angular);
 
-	var _base64Helpers = __webpack_require__(23);
+	var _base64Helpers = __webpack_require__(25);
 
 	var _base64Helpers2 = _interopRequireDefault(_base64Helpers);
 
-	__webpack_require__(24);
+	__webpack_require__(26);
 
-	__webpack_require__(21);
+	__webpack_require__(23);
 
-	var _archivematicaBrowseHelpers = __webpack_require__(26);
+	var _archivematicaBrowseHelpers = __webpack_require__(28);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32862,7 +33740,7 @@
 	Browse.$inject = ['Restangular'];
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(exports) {
@@ -32908,7 +33786,7 @@
 
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -45263,10 +46141,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(25)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)(module), (function() { return this; }())))
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -45282,7 +46160,7 @@
 
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45295,7 +46173,7 @@
 	exports.decode_browse_response = decode_browse_response;
 	exports.format_entries = format_entries;
 
-	var _base64Helpers = __webpack_require__(27);
+	var _base64Helpers = __webpack_require__(25);
 
 	var _base64Helpers2 = _interopRequireDefault(_base64Helpers);
 
@@ -45370,53 +46248,7 @@
 
 
 /***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	(function(exports) {
-	    // Returns true if the passed string consists of codepoints between 0 and 255
-	    // which are valid within UTF-8.
-	    function all_bytes_valid_utf8 (str) {
-	        var invalid_chars = [0xc0, 0xc1, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9,
-	                             0xF0, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF];
-
-	        for (var i in str) {
-	            var cp = str.codePointAt(i);
-	            if (cp > 255 || invalid_chars.indexOf(cp) !== -1) {
-	                return false
-	            }
-	        }
-
-	        return true;
-	    };
-
-	    // Decodes the string before base64-encoding.
-	    function encode_escaped (str) {
-	        return window.btoa(unescape(encodeURIComponent(str)));
-	    };
-
-	    // If passed string is UTF-8, decodes to bytes first before encoding.
-	    exports.encode = function (str) {
-	        if (all_bytes_valid_utf8(str)) {
-	            return window.btoa(str);
-	        } else {
-	            return encode_escaped(str);
-	        }
-	    };
-
-	    // Returns a UTF-8 string if input is UTF-8, raw bytes otherwise.
-	    exports.decode = function (str) {
-	        try {
-	            return decodeURIComponent(escape(window.atob(str)));
-	        } catch (URIError) {
-	            return window.atob(str);
-	        }
-	    };
-	})( false ? this['Base64'] = {} : exports);
-
-
-/***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45431,9 +46263,9 @@
 
 	var _angular2 = _interopRequireDefault(_angular);
 
-	__webpack_require__(24);
+	__webpack_require__(26);
 
-	__webpack_require__(21);
+	__webpack_require__(23);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45469,7 +46301,7 @@
 	SourceLocations.$inject = ['Restangular'];
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45488,11 +46320,11 @@
 
 	var _angular2 = _interopRequireDefault(_angular);
 
-	var _base64Helpers = __webpack_require__(23);
+	var _base64Helpers = __webpack_require__(25);
 
 	var _base64Helpers2 = _interopRequireDefault(_base64Helpers);
 
-	var _jquery = __webpack_require__(30);
+	var _jquery = __webpack_require__(31);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -45577,7 +46409,7 @@
 	exports.default = _angular2.default.module('services.transfer', []).service('Transfer', Transfer).name;
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -56591,7 +57423,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56719,7 +57551,7 @@
 	BrowseController.$inject = ['Browse', 'SourceLocations', 'Transfer'];
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56734,7 +57566,7 @@
 
 	var _angular2 = _interopRequireDefault(_angular);
 
-	__webpack_require__(29);
+	__webpack_require__(30);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -56807,6 +57639,34 @@
 
 
 	HeaderController.$inject = ['Transfer'];
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"es": {
+			"Accession no.": "Número de accesión",
+			"Add": "Añadir",
+			"Add next": "Añadir siguiente",
+			"Browse": "Navegar",
+			"DSpace": "DSpace",
+			"Disk image": "Imagen de disco",
+			"Metadata entered in this form will be associated with the next component added to this transfer. Data will not be used if no component is added after the form is saved.": "Los metadatos introducidos en este formulario serán asociados con el siguiente componente añadido en esta transferencia, sin embargo no serán utilizados si ningún componente es añadido una vez que el formulario sea grabado.",
+			"Standard": "Estándar",
+			"Start transfer": "Comenzar transferencia",
+			"Transfer name": "Nombre de la transferencia",
+			"Transfer type": "Tipo de transferencia",
+			"Unzipped bag": "Bag no comprimido",
+			"Zipped bag": "Bag comprimido (zip)"
+		},
+		"fr": {
+			"Add": "Ajouter",
+			"Browse": "Parcourir",
+			"DSpace": "DSpace",
+			"Start transfer": "Commencer le transfert"
+		}
+	};
 
 /***/ }
 /******/ ]);
