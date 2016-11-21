@@ -97,7 +97,7 @@
 
   <script type="text/template" id="sip-template">
     <div class="sip-row" id="sip-row-<%= uuid %>">
-      <div class="sip-detail-icon-status"><%= this.model.jobs.getIcon() %></div>
+      <div class="sip-detail-icon-status"><%= this.getIcon() %></div>
       <div class="sip-detail-directory">
         <%= directory %>
         <abbr title="<%= uuid %>">{% trans "UUID" %}</span>
@@ -128,15 +128,12 @@
         [<a href="#" title="<%= tmp %>">?</a>]
       <% } %>
     </div>
-    <div class="job-detail-currentstep"><span title="<%= new Date(timestamp * 1000).getArchivematicaDateTime() %>  /  <%= timestamp %>"><%= currentstep %></span></div>
+    <div class="job-detail-currentstep" data-currentstep="<%= currentstep %>">
+      <span title="<%= new Date(timestamp * 1000).getArchivematicaDateTime() %> / <%= timestamp %>"><%= currentstep_label %></span>
+    </div>
     <div class="job-detail-actions">
       <a class="btn_show_tasks" href="#" title="{% trans 'Tasks' %}"><span>{% trans "Tasks" %}</span></a>
     </div>
-  </script>
-
-  <script type="text/template" id="directory-browser-template">
-    <div id="directory-browser-tab">{% trans "Directory browser" %} (<a href="#">{% trans "Close" %}</a>)</div>
-    <div id="directory-browser-content"></div>
   </script>
 
   <script type="text/template" id="status-template">
@@ -144,46 +141,6 @@
       <span>{% trans "Initializing..." %}</span>
       <img src="{% static 'images/bullet_delete.png' %}" />
     </div>
-  </script>
-
-  <!-- Transfer component form layout templates -->
-  <script type="text/template" id='transfer-component-layout'>
-    <div id="transfer-component-form">
-      <div class="activity-indicator">
-        <img src="{% static 'images/ajax-loader.gif' %}" />
-      </div>
-      <div style="float:left">
-        <form class="form-inline">
-          <div id='transfer-type-container'>
-            <select type='text' id='transfer-type' class="form-control">
-              <option value='standard'>{% trans "Standard" context "Transfer type" %}</option>
-              <option value='unzipped bag'>{% trans "Unzipped Bag" context "Transfer type" %}</option>
-              <option value='zipped bag'>{% trans "Zipped Bag" context "Transfer type" %}</option>
-              {% if not hide_features.dspace %}
-                <option value='dspace'>{% trans "DSpace" context "Transfer type" %}</option>
-              {% endif %}
-              {% comment 'Disabled until maildir is better supported' %}
-                <option value='maildir'>{% trans "Maildir" context "Transfer type" %}</option>
-              {% endcomment %}
-              <option value='disk image'>{% trans "Disk image" context "Transfer type" %}</option>
-            </select>
-            <div class="help-block">{% trans "Type" %}</div>
-          </div>
-          <div id='transfer-name-container'>
-            <input type='text' id='transfer-name' class="form-control"></input>
-            <div class="help-block">{% trans "Transfer name" %}</div>
-          </div>
-          <div style="float:left;">
-            <input type='text' id='transfer-accession-number' class="form-control"></input>
-            <div class="help-block">{% trans "Accession no." %}</div>
-          </div>
-        </form>
-      </div>
-      <div id="transfer_paths_area">
-        <%= transfer_paths %>
-      </div>
-    </div>
-    <br clear='all'/>
   </script>
 
   <script type="text/template" id='transfer-component-path-item'>

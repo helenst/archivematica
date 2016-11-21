@@ -103,7 +103,7 @@ def ingest_status(request, uuid=None):
             # Check if hidden (TODO: this method is slow)
             if models.SIP.objects.is_hidden(item['sipuuid']):
                 continue
-            jobs = helpers.get_jobs_by_sipuuid(item['sipuuid'])
+            jobs = models.Job.objects.filter(sipuuid=item['sipuuid'], subjobof='').order_by('-createdtime', 'subjobof')
             item['directory'] = utils.get_directory_name_from_job(jobs)
             item['timestamp'] = calendar.timegm(item['timestamp'].timetuple())
             item['uuid'] = item['sipuuid']
@@ -114,16 +114,12 @@ def ingest_status(request, uuid=None):
                 newJob = {}
                 item['jobs'].append(newJob)
 
-                # allow user to know name of file that has failed normalization
-                if job.jobtype == 'Access normalization failed - copying' or job.jobtype == 'Preservation normalization failed - copying' or job.jobtype == 'thumbnail normalization failed - copying':
-                    task = models.Task.objects.get(job=job)
-                    newJob['filename'] = task.filename
-
                 newJob['uuid'] = job.jobuuid
                 newJob['type'] = job.jobtype
                 newJob['microservicegroup'] = job.microservicegroup
                 newJob['subjobof'] = job.subjobof
                 newJob['currentstep'] = job.currentstep
+                newJob['currentstep_label'] = job.get_currentstep_display()
                 newJob['timestamp'] = '%d.%s' % (calendar.timegm(job.createdtime.timetuple()), str(job.createdtimedec).split('.')[-1])
                 try: mcp_status
                 except NameError: pass

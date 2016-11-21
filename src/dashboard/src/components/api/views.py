@@ -84,7 +84,7 @@ def get_unit_status(unit_uuid, unit_type):
     ret = {}
     job = models.Job.objects.filter(sipuuid=unit_uuid).filter(unittype=unit_type).order_by('-createdtime', '-createdtimedec')[0]
     ret['microservice'] = job.jobtype
-    if job.currentstep == 'Awaiting decision':
+    if job.currentstep == models.Job.STATUS_AWAITING_DECISION:
         ret['status'] = 'USER_INPUT'
     elif 'failed' in job.microservicegroup.lower():
         ret['status'] = 'FAILED'
@@ -174,7 +174,7 @@ def waiting_for_user_input(request):
     error = None
     waiting_units = []
 
-    jobs = models.Job.objects.filter(currentstep='Awaiting decision')
+    jobs = models.Job.objects.filter(currentstep=models.Job.STATUS_AWAITING_DECISION)
     for job in jobs:
         unit_uuid = job.sipuuid
         directory = os.path.basename(os.path.normpath(job.directory))
@@ -294,7 +294,7 @@ def unapproved_transfers(request):
                     | Q(jobtype="Approve DSpace transfer")
                     | Q(jobtype="Approve bagit transfer")
                     | Q(jobtype="Approve zipped bagit transfer")
-                ) & Q(currentstep='Awaiting decision')
+                ) & Q(currentstep=models.Job.STATUS_AWAITING_DECISION)
             )
 
             for job in jobs:
@@ -408,7 +408,7 @@ def approve_transfer_via_mcp(directory, transfer_type, user_id):
                 db_transfer_path = os.path.join(db_transfer_path, '')
             # look up job UUID using transfer path
             try:
-                job = models.Job.objects.filter(directory=db_transfer_path, currentstep='Awaiting decision')[0]
+                job = models.Job.objects.filter(directory=db_transfer_path, currentstep=models.Job.STATUS_AWAITING_DECISION)[0]
                 unit_uuid = job.sipuuid
 
                 type_task_config_descriptions = {
