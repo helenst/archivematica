@@ -20,8 +20,8 @@
 # @package Archivematica
 # @subpackage MCPServer
 # @author Joseph Perry <joseph@artefactual.com>
+
 import logging
-import sys
 import uuid
 
 from utils import log_exceptions
@@ -36,11 +36,9 @@ from linkTaskManagerGetUserChoiceFromMicroserviceGeneratedList import linkTaskMa
 from linkTaskManagerSetUnitVariable import linkTaskManagerSetUnitVariable
 from linkTaskManagerUnitVariableLinkPull import linkTaskManagerUnitVariableLinkPull
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from django_mysqlpool import auto_close_db
 from databaseFunctions import logJobCreatedSQL, getUTCDate
 
-sys.path.append("/usr/share/archivematica/dashboard")
 from main.models import Job, MicroServiceChainLink, MicroServiceChainLinkExitCode, TaskType
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
@@ -57,14 +55,16 @@ constlinkTaskManagerGetUserChoiceFromMicroserviceGeneratedList = TaskType.object
 constlinkTaskManagerSetUnitVariable = TaskType.objects.get(description="linkTaskManagerSetUnitVariable").pk
 constlinkTaskManagerUnitVariableLinkPull = TaskType.objects.get(description="linkTaskManagerUnitVariableLinkPull").pk
 
+
 class jobChainLink:
-    def __init__(self, jobChain, jobChainLinkPK, unit, passVar=None, subJobOf=""):
-        if jobChainLinkPK == None:
+    def __init__(self, jobChain, jobChainLinkPK, unit, unit_choices, passVar=None, subJobOf=""):
+        if jobChainLinkPK is None:
             return None
         self.UUID = uuid.uuid4().__str__()
+        self.unit_choices = unit_choices
         self.jobChain = jobChain
         self.unit = unit
-        self.passVar=passVar
+        self.passVar = passVar
         self.createdDate = getUTCDate()
         self.subJobOf = subJobOf
 
@@ -95,7 +95,7 @@ class jobChainLink:
 
         logJobCreatedSQL(self)
 
-        if self.createTasks(taskType, taskTypePKReference) == None:
+        if self.createTasks(taskType, taskTypePKReference) is None:
             self.getNextChainLinkPK(None)
             #can't have none represent end of chain, and no tasks to process.
             #could return negative?
@@ -105,7 +105,7 @@ class jobChainLink:
             linkTaskManagerDirectories(self, taskTypePKReference, self.unit)
         elif taskType == constTaskForEachFile:
             if self.reloadFileList:
-                self.unit.reloadFileList();
+                self.unit.reloadFileList()
             linkTaskManagerFiles(self, taskTypePKReference, self.unit)
         elif taskType == constSelectPathTask:
             linkTaskManagerChoice(self, taskTypePKReference, self.unit)

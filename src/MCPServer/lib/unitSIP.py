@@ -22,19 +22,15 @@
 # @author Joseph Perry <joseph@artefactual.com>
 
 import logging
-import sys
-import lxml.etree as etree
 
-import archivematicaMCP
 from unit import unit
 
-sys.path.append("/usr/share/archivematica/dashboard")
 from main.models import SIP
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from dicts import ReplacementDict
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
+
 
 class unitSIP(unit):
     def __init__(self, currentPath, UUID):
@@ -83,12 +79,4 @@ class unitSIP(unit):
         ret["%AIPFilename%"] = self.aipFilename
         ret["%unitType%"] = self.unitType
         ret["%SIPType%"] = self.sipType
-        return ret
-
-    def xmlify(self):
-        ret = etree.Element("unit")
-        etree.SubElement(ret, "type").text = "SIP"
-        unitXML = etree.SubElement(ret, "unitXML")
-        etree.SubElement(unitXML, "UUID").text = self.UUID
-        etree.SubElement(unitXML, "currentPath").text = self.currentPath.replace(archivematicaMCP.config.get('MCPServer', "sharedDirectory"), "%sharedPath%")
         return ret

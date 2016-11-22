@@ -23,15 +23,14 @@
 
 import logging
 import os
-import sys
 
 import archivematicaMCP
 from unitFile import unitFile
 
-sys.path.append("/usr/share/archivematica/dashboard")
 from main.models import File, UnitVariable
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
+
 
 class unit:
     """A class to inherit from, to over-ride methods, defininging a processing object at the Job level"""

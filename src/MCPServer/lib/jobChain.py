@@ -22,25 +22,15 @@
 # @author Joseph Perry <joseph@artefactual.com>
 
 import logging
-import sys
 
 from jobChainLink import jobChainLink
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from dicts import ReplacementDict
 
-sys.path.append("/usr/share/archivematica/dashboard")
 from main.models import MicroServiceChain, UnitVariable
 
-#Holds:
-#-UNIT
-#-Job chain link
-#-Job chain description
-#
-#potentialToHold/getFromDB
-#-previous chain links
-
 LOGGER = logging.getLogger('archivematica.mcp.server')
+
 
 def fetchUnitVariableForUnit(unit_uuid):
     """
@@ -57,18 +47,19 @@ def fetchUnitVariableForUnit(unit_uuid):
 
     return results
 
+
 class jobChain:
-    def __init__(self, unit, chainPK, notifyComplete=None, passVar=None, UUID=None, subJobOf=""):
+    def __init__(self, unit, chainPK, unit_choices):
         """Create an instance of a chain from the MicroServiceChains table"""
         LOGGER.debug('Creating jobChain %s for chain %s', unit, chainPK)
-        if chainPK == None:
+        if chainPK is None:
             return None
         self.unit = unit
         self.pk = chainPK
-        self.notifyComplete = notifyComplete
-        self.UUID = UUID
+        self.UUID = None
         self.linkSplitCount = 1
-        self.subJobOf = subJobOf
+        self.subJobOf = ""
+        self.unit_choices = unit_choices
 
         chain = MicroServiceChain.objects.get(id=str(chainPK))
         LOGGER.debug('Chain: %s', chain)
@@ -78,11 +69,9 @@ class jobChain:
         # Migrate over unit variables containing replacement dicts from previous chains,
         # but prioritize any values contained in passVars passed in as kwargs
         rd = fetchUnitVariableForUnit(unit.UUID)
-        if passVar:
-            rd.update(passVar)
 
-        self.currentLink = jobChainLink(self, self.startingChainLink, unit, passVar=rd, subJobOf=subJobOf)
-        if self.currentLink == None:
+        self.currentLink = jobChainLink(self, self.startingChainLink, unit, self.unit_choices, passVar=rd, subJobOf="")
+        if self.currentLink is None:
             return None
 
     def nextChainLink(self, pk, passVar=None, incrementLinkSplit=False, subJobOf=""):
@@ -91,12 +80,9 @@ class jobChain:
             subJobOf = self.subJobOf
         if incrementLinkSplit:
             self.linkSplitCount += 1
-        if pk != None:
-            jobChainLink(self, pk, self.unit, passVar=passVar, subJobOf=subJobOf)
+        if pk is not None:
+            jobChainLink(self, pk, self.unit, self.unit_choices, passVar=passVar, subJobOf=subJobOf)
         else:
             self.linkSplitCount -= 1
             if self.linkSplitCount == 0:
                 LOGGER.debug('Done with unit %s', self.unit.UUID)
-                if self.notifyComplete:
-                    self.notifyComplete(self)
-

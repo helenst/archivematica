@@ -22,20 +22,14 @@
 # @author Joseph Perry <joseph@artefactual.com>
 
 import logging
-import lxml.etree as etree
 import os
-import sys
 
 import archivematicaMCP
 from unit import unit
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from dicts import ReplacementDict
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
-
-class UnitDIPError(Exception):
-    pass
 
 
 class unitDIP(unit):
@@ -71,12 +65,4 @@ class unitDIP(unit):
         ret["%SIPDirectoryBasename"] = os.path.basename(os.path.abspath(sip_directory))
         ret["%relativeLocation%"] = target.replace(self.currentPath, relative_directory_location, 1)
         ret["%unitType%"] = "DIP"
-        return ret
-
-    def xmlify(self):
-        ret = etree.Element("unit")
-        etree.SubElement(ret, "type").text = "DIP"
-        unitXML = etree.SubElement(ret, "unitXML")
-        etree.SubElement(unitXML, "UUID").text = self.UUID
-        etree.SubElement(unitXML, "currentPath").text = self.currentPath.replace(archivematicaMCP.config.get('MCPServer', "sharedDirectory"), "%sharedPath%")
         return ret

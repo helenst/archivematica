@@ -26,16 +26,14 @@ import logging
 import lxml.etree as etree
 import os
 import threading
-import sys
 import time
 
 from linkTaskManager import LinkTaskManager
 import archivematicaMCP
-from linkTaskManagerChoice import choicesAvailableForUnits, choicesAvailableForUnitsLock, waitingOnTimer
+from linkTaskManagerChoice import waitingOnTimer
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from dicts import ReplacementDict
-sys.path.append("/usr/share/archivematica/dashboard")
+
 from main.models import DashboardSetting, Job, MicroServiceChainLink, MicroServiceChoiceReplacementDic, StandardTaskConfig, UserProfile
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
@@ -73,7 +71,7 @@ class linkTaskManagerReplacementDicFromChoice(LinkTaskManager):
                 self.choices.append((len(self.choices), stc.execute, str(args)))
 
         preConfiguredChain = self.checkForPreconfiguredXML()
-        if preConfiguredChain != None:
+        if preConfiguredChain is not None:
             if preConfiguredChain != waitingOnTimer:
                 self.jobChainLink.setExitMessage(Job.STATUS_COMPLETED_SUCCESSFULLY)
                 rd = ReplacementDict.fromstring(preConfiguredChain)
@@ -82,17 +80,15 @@ class linkTaskManagerReplacementDicFromChoice(LinkTaskManager):
             else:
                 LOGGER.info('Waiting on delay to resume processing on unit %s', unit)
         else:
-            choicesAvailableForUnitsLock.acquire()
-            self.jobChainLink.setExitMessage(Job.STATUS_AWAITING_DECISION)
-            choicesAvailableForUnits[self.jobChainLink.UUID] = self
-            choicesAvailableForUnitsLock.release()
+            with self.jobChainLink.unit_choices:
+                self.jobChainLink.setExitMessage(Job.STATUS_AWAITING_DECISION)
+                self.jobChainLink.unit_choices[self.jobChainLink.UUID] = self
 
     def checkForPreconfiguredXML(self):
         ret = None
-        xmlFilePath = os.path.join( \
-                                        self.unit.currentPath.replace("%sharedPath%", archivematicaMCP.config.get('MCPServer', "sharedDirectory"), 1) + "/", \
-                                        archivematicaMCP.config.get('MCPServer', "processingXMLFile") \
-                                    )
+        xmlFilePath = os.path.join(
+            self.unit.currentPath.replace("%sharedPath%", archivematicaMCP.config.get('MCPServer', "sharedDirectory"), 1) + "/",
+            archivematicaMCP.config.get('MCPServer', "processingXMLFile"))
 
         if os.path.isfile(xmlFilePath):
             # For a list of items with pks:
@@ -111,8 +107,7 @@ class linkTaskManagerReplacementDicFromChoice(LinkTaskManager):
                             unitAtimeXML = delayXML.get("unitCtime")
                             if unitAtimeXML != None and unitAtimeXML.lower() != "no":
                                 delaySeconds=int(delayXML.text)
-                                unitTime = os.path.getmtime(self.unit.currentPath.replace("%sharedPath%", \
-                                               archivematicaMCP.config.get('MCPServer', "sharedDirectory"), 1))
+                                unitTime = os.path.getmtime(self.unit.currentPath.replace("%sharedPath%", archivematicaMCP.config.get('MCPServer', "sharedDirectory"), 1))
                                 nowTime=time.time()
                                 timeDifference = nowTime - unitTime
                                 timeToGo = delaySeconds - timeDifference
@@ -140,28 +135,13 @@ class linkTaskManagerReplacementDicFromChoice(LinkTaskManager):
                 LOGGER.warning('Error parsing xml at %s for pre-configured choice', xmlFilePath, exc_info=True)
         return ret
 
-    def xmlify(self):
-        """Returns an etree XML representation of the choices available."""
-        ret = etree.Element("choicesAvailableForUnit")
-        etree.SubElement(ret, "UUID").text = self.jobChainLink.UUID
-        ret.append(self.unit.xmlify())
-        choices = etree.SubElement(ret, "choices")
-        for chainAvailable, description, rd in self.choices:
-            choice = etree.SubElement(choices, "choice")
-            etree.SubElement(choice, "chainAvailable").text = chainAvailable.__str__()
-            etree.SubElement(choice, "description").text = description
-
-        return ret
-
     def proceedWithChoice(self, index, user_id):
         if user_id:
             agent_id = UserProfile.objects.get(user_id=int(user_id)).agent_id
             agent_id = str(agent_id)
             self.unit.setVariable("activeAgent", agent_id, None)
 
-        choicesAvailableForUnitsLock.acquire()
-        del choicesAvailableForUnits[self.jobChainLink.UUID]
-        choicesAvailableForUnitsLock.release()
+        del self.jobChainLink.unit_choices[self.jobChainLink.UUID]
 
         # get the one at index, and go with it.
         choiceIndex, description, replacementDic2 = self.choices[int(index)]

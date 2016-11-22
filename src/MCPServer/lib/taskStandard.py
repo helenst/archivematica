@@ -25,7 +25,6 @@ import cPickle
 import gearman
 import logging
 import os
-import sys
 import time
 import uuid
 
@@ -34,11 +33,11 @@ from utils import log_exceptions
 
 from django.utils import timezone
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from django_mysqlpool import auto_close_db
 from fileOperations import writeToFile
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
+
 
 # ~Class Task~
 #Tasks are what are assigned to clients.

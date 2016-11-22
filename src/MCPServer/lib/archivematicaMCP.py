@@ -44,17 +44,18 @@ import time
 import uuid
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings.common'
-sys.path.append('/usr/lib/archivematica/MCPServer')
+for item in ('/usr/lib/archivematica/archivematicaCommon', '/usr/share/archivematica/dashboard', '/usr/lib/archivematica/MCPServer'):
+    if item not in sys.path:
+        sys.path.append(item)
 
 import django
-sys.path.append("/usr/share/archivematica/dashboard")
 django.setup()
 
 from django.db.models import Q
 
 # This project, alphabetical by import source
 import watchDirectory
-import RPCServer
+import gRPCServer
 from utils import log_exceptions
 
 from jobChain import jobChain
@@ -63,28 +64,22 @@ from unitDIP import unitDIP
 from unitFile import unitFile
 from unitTransfer import unitTransfer
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from django_mysqlpool import auto_close_db
 import databaseFunctions
 from archivematicaFunctions import unicodeToStr
 
 from main.models import Job, SIP, Task, WatchedDirectory
 
-global countOfCreateUnitAndJobChainThreaded
-countOfCreateUnitAndJobChainThreaded = 0
 
 config = ConfigParser.SafeConfigParser()
 config.read("/etc/archivematica/MCPServer/serverConfig.conf")
-
-#time to sleep to allow db to be updated with the new location of a SIP
-dbWaitSleep = 2
-
 
 limitTaskThreads = config.getint('Protocol', "limitTaskThreads")
 limitTaskThreadsSleep = config.getfloat('Protocol', "limitTaskThreadsSleep")
 limitGearmanConnectionsSemaphore = threading.Semaphore(value=config.getint('Protocol', "limitGearmanConnections"))
 reservedAsTaskProcessingThreads = config.getint('Protocol', "reservedAsTaskProcessingThreads")
-stopSignalReceived = False #Tracks whether a sigkill has been received or not
+stopSignalReceived = False  # Tracks whether a sigkill has been received or not
+
 
 def isUUID(uuid):
     """Return boolean of whether it's string representation of a UUID v4"""
@@ -98,13 +93,15 @@ def isUUID(uuid):
         return False
     return True
 
+
 def fetchUUIDFromPath(path):
     #find UUID on end of SIP path
     uuidLen = -36
     if isUUID(path[uuidLen-1:-1]):
         return path[uuidLen-1:-1]
 
-def findOrCreateSipInDB(path, waitSleep=dbWaitSleep, unit_type='SIP'):
+
+def findOrCreateSipInDB(path, unit_type='SIP'):
     """Matches a directory to a database sip by it's appended UUID, or path. If it doesn't find one, it will create one"""
     path = path.replace(config.get('MCPServer', "sharedDirectory"), "%sharedPath%", 1)
 
@@ -153,70 +150,74 @@ def findOrCreateSipInDB(path, waitSleep=dbWaitSleep, unit_type='SIP'):
 
     return UUID
 
+
 @log_exceptions
 @auto_close_db
 def createUnitAndJobChain(path, config, terminate=False):
     path = unicodeToStr(path)
     if os.path.isdir(path):
-            path = path + "/"
+        path = path + "/"
     logger.debug('Creating unit and job chain for %s with %s', path, config)
     unit = None
+    unit_type = config[3]
     if os.path.isdir(path):
-        if config[3] == "SIP":
+        if unit_type == "SIP":
             UUID = findOrCreateSipInDB(path)
             unit = unitSIP(path, UUID)
-        elif config[3] == "DIP":
+        elif unit_type == "DIP":
             UUID = findOrCreateSipInDB(path, unit_type='DIP')
             unit = unitDIP(path, UUID)
-        elif config[3] == "Transfer":
+        elif unit_type == "Transfer":
             unit = unitTransfer(path)
     elif os.path.isfile(path):
-        if config[3] == "Transfer":
+        if unit_type == "Transfer":
             unit = unitTransfer(path)
-        else:
-            return
-            UUID = uuid.uuid4()
-            unit = unitFile(path, UUID)
-    else:
+    if unit is None:
         return
-    jobChain(unit, config[1])
+
+    # Start chain, pass chainId and shared UnitChoices
+    jobChain(unit, config[1], config[4])
 
     if terminate:
         exit(0)
 
+
 def createUnitAndJobChainThreaded(path, config, terminate=True):
-    global countOfCreateUnitAndJobChainThreaded
     try:
         logger.debug('Watching path %s', path)
-        t = threading.Thread(target=createUnitAndJobChain, args=(path, config), kwargs={"terminate":terminate})
+        t = threading.Thread(target=createUnitAndJobChain, args=(path, config), kwargs={"terminate": terminate})
         t.daemon = True
-        countOfCreateUnitAndJobChainThreaded += 1
         while(limitTaskThreads <= threading.activeCount() + reservedAsTaskProcessingThreads ):
             if stopSignalReceived:
                 logger.info('Signal was received; stopping createUnitAndJobChainThreaded(path, config)')
                 exit(0)
             logger.debug('Active thread count: %s', threading.activeCount())
             time.sleep(.5)
-        countOfCreateUnitAndJobChainThreaded -= 1
         t.start()
     except Exception:
         logger.exception('Error creating threads to watch directories')
 
-def watchDirectories():
+
+def watchDirectories(unit_choices):
     """Start watching the watched directories defined in the WatchedDirectories table in the database."""
     watched_dir_path = config.get('MCPServer', "watchDirectoryPath")
     interval = config.getint('MCPServer', "watchDirectoriesPollInterval")
 
-    watched_directories = WatchedDirectory.objects.all()
-
-    for watched_directory in watched_directories:
+    for watched_directory in WatchedDirectory.objects.all():
         directory = watched_directory.watched_directory_path.replace("%watchDirectoryPath%", watched_dir_path, 1)
 
         # Tuple of variables that may be used by a callback
-        row = (watched_directory.watched_directory_path, watched_directory.chain_id, watched_directory.only_act_on_directories, watched_directory.expected_type.description)
+        row = (
+            watched_directory.watched_directory_path,
+            watched_directory.chain_id,
+            watched_directory.only_act_on_directories,
+            watched_directory.expected_type.description,
+            unit_choices
+        )
 
         if not os.path.isdir(directory):
             os.makedirs(directory)
+
         for item in os.listdir(directory):
             if item == ".gitignore":
                 continue
@@ -225,16 +226,16 @@ def watchDirectories():
             while(limitTaskThreads <= threading.activeCount() + reservedAsTaskProcessingThreads ):
                 time.sleep(1)
             createUnitAndJobChainThreaded(path, row, terminate=False)
-        actOnFiles=True
-        if watched_directory.only_act_on_directories:
-            actOnFiles=False
+
+        act_on_files = not watched_directory.only_act_on_directories
         watchDirectory.archivematicaWatchDirectory(
             directory,
             variablesAdded=row,
             callBackFunctionAdded=createUnitAndJobChainThreaded,
-            alertOnFiles=actOnFiles,
+            alertOnFiles=act_on_files,
             interval=interval,
         )
+
 
 def signal_handler(signalReceived, frame):
     """Used to handle the stop/kill command signals (SIGKILL)"""
@@ -249,16 +250,13 @@ def signal_handler(signalReceived, frame):
     sys.exit(0)
     exit(0)
 
+
 @log_exceptions
 @auto_close_db
-def debugMonitor():
-    """Periodically prints out status of MCP, including whether the database lock is locked, thread count, etc."""
-    global countOfCreateUnitAndJobChainThreaded
-    while True:
-        logger.debug('Debug monitor: datetime: %s', databaseFunctions.getUTCDate())
-        logger.debug('Debug monitor: thread count: %s', threading.activeCount())
-        logger.debug('Debug monitor: created job chain threaded: %s', countOfCreateUnitAndJobChainThreaded)
-        time.sleep(3600)
+def print_internal_state(signal_received, frame):
+    logger.debug('Debug monitor: datetime: %s', databaseFunctions.getUTCDate())
+    logger.debug('Debug monitor: thread count: %s', threading.activeCount())
+
 
 @log_exceptions
 @auto_close_db
@@ -267,6 +265,7 @@ def flushOutputs():
         sys.stdout.flush()
         sys.stderr.flush()
         time.sleep(5)
+
 
 def cleanupOldDbEntriesOnNewRun():
     Job.objects.filter(currentstep=Job.STATUS_AWAITING_DECISION).delete()
@@ -308,6 +307,11 @@ LOGGING_CONFIG = {
             'backupCount': 5,
             'maxBytes': 4 * 1024 * 1024,  # 4 MiB
         },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'detailed',
+        },
     },
     'loggers': {
         'archivematica': {
@@ -315,10 +319,34 @@ LOGGING_CONFIG = {
         },
     },
     'root': {
-        'handlers': ['logfile', 'verboselogfile'],
+        'handlers': ['logfile', 'verboselogfile', 'console'],
         'level': 'WARNING',
     },
 }
+
+
+class UnitChoices(dict):
+    """
+    Thread-safe store of MCP's weirdest global shared state data structure.
+    Currently, this is a subclass of dict that is expected to be used via the
+    with statement. Implementation details may change but the interface will
+    be maintained, e.g. see http://stackoverflow.com/a/3387975.
+    """
+    def __init__(self, *args, **kwargs):
+        dict.__init__(self, *args, **kwargs)
+        self._lock = threading.Lock()
+        self._logger = logging.getLogger('archivematica.mcp.server').addHandler(logging.NullHandler())
+
+    def __enter__(self):
+        self._lock.acquire()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self._lock.release()
+
+    def set_logger(self, logger):
+        self._logger = logger
+
 
 if __name__ == '__main__':
     logging.config.dictConfig(LOGGING_CONFIG)
@@ -329,19 +357,20 @@ if __name__ == '__main__':
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGUSR1, print_internal_state)
 
     logger.info('This PID: %s', os.getpid())
     logger.info('User: %s', getpass.getuser())
 
-    t = threading.Thread(target=debugMonitor)
-    t.daemon = True
-    t.start()
+    unit_choices = UnitChoices()
 
     t = threading.Thread(target=flushOutputs)
     t.daemon = True
     t.start()
-    cleanupOldDbEntriesOnNewRun()
-    watchDirectories()
 
-    # This is blocking the main thread with the worker loop
-    RPCServer.startRPCServer()
+    cleanupOldDbEntriesOnNewRun()
+
+    watchDirectories(unit_choices)
+
+    # This is going to block the main thread
+    gRPCServer.start(unit_choices)

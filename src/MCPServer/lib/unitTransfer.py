@@ -22,20 +22,17 @@
 # @author Joseph Perry <joseph@artefactual.com>
 
 import logging
-import lxml.etree as etree
-import sys
 import uuid
 
 import archivematicaMCP
 from unit import unit
 
-sys.path.append("/usr/share/archivematica/dashboard")
 from main.models import Transfer
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from dicts import ReplacementDict
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
+
 
 class unitTransfer(unit):
     def __init__(self, currentPath, UUID=""):
@@ -103,14 +100,4 @@ class unitTransfer(unit):
             sip=self.UUID
         )
         ret["%unitType%"] = self.unitType
-        return ret
-
-    def xmlify(self):
-        ret = etree.Element("unit")
-        etree.SubElement(ret, "type").text = "Transfer"
-        unitXML = etree.SubElement(ret, "unitXML")
-        etree.SubElement(unitXML, "UUID").text = self.UUID
-        tempPath = self.currentPath.replace(archivematicaMCP.config.get('MCPServer', "sharedDirectory"), "%sharedPath%")
-        etree.SubElement(unitXML, "currentPath").text = tempPath
-
         return ret

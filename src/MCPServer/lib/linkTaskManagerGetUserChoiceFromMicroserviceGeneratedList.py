@@ -25,19 +25,17 @@
 import logging
 from lxml import etree
 import os
-import sys
 
 # This project,  alphabetical by import source
 from linkTaskManager import LinkTaskManager
 import archivematicaMCP
-from linkTaskManagerChoice import choicesAvailableForUnits, choicesAvailableForUnitsLock
 
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 from dicts import ReplacementDict, ChoicesDict
-sys.path.append("/usr/share/archivematica/dashboard")
+
 from main.models import StandardTaskConfig, UserProfile, Job
 
 LOGGER = logging.getLogger('archivematica.mcp.server')
+
 
 class linkTaskManagerGetUserChoiceFromMicroserviceGeneratedList(LinkTaskManager):
     def __init__(self, jobChainLink, pk, unit):
@@ -71,13 +69,14 @@ class linkTaskManagerGetUserChoiceFromMicroserviceGeneratedList(LinkTaskManager)
 
         preConfiguredIndex = self.checkForPreconfiguredXML()
         if preConfiguredIndex is not None:
-            self.jobChainLink.setExitMessage(Job.STATUS_COMPLETED_SUCCESSFULLY)
-            self.proceedWithChoice(index=preConfiguredIndex, user_id=None)
+            with jobChainLink.unit_choices:
+                self.jobChainLink.setExitMessage(Job.STATUS_COMPLETED_SUCCESSFULLY)
+                self.proceedWithChoice(index=preConfiguredIndex, user_id=None)
         else:
-            choicesAvailableForUnitsLock.acquire()
-            self.jobChainLink.setExitMessage(Job.STATUS_AWAITING_DECISION)
-            choicesAvailableForUnits[self.jobChainLink.UUID] = self
-            choicesAvailableForUnitsLock.release()
+            with jobChainLink.unit_choices:
+                self.jobChainLink.setExitMessage(Job.STATUS_AWAITING_DECISION)
+                self.jobChainLink.unit_choice[self.jobChainLink.UUID] = self
+
 
     def checkForPreconfiguredXML(self):
         """ Check the processing XML file for a pre-selected choice.
@@ -91,7 +90,7 @@ class linkTaskManagerGetUserChoiceFromMicroserviceGeneratedList(LinkTaskManager)
         try:
             tree = etree.parse(xmlFilePath)
             root = tree.getroot()
-        except (etree.LxmlError, IOError) as e:
+        except (etree.LxmlError, IOError):
             LOGGER.warning('Error parsing xml at %s for pre-configured choice', xmlFilePath, exc_info=True)
             return None
         for choice in root.findall(".//preconfiguredChoice"):
@@ -106,30 +105,13 @@ class linkTaskManagerGetUserChoiceFromMicroserviceGeneratedList(LinkTaskManager)
                         return index
         return None
 
-    def xmlify(self):
-        """Returns an etree XML representation of the choices available."""
-        ret = etree.Element("choicesAvailableForUnit")
-        etree.SubElement(ret, "UUID").text = self.jobChainLink.UUID
-        ret.append(self.unit.xmlify())
-        choices = etree.SubElement(ret, "choices")
-        for chainAvailable, description, rd in self.choices:
-            choice = etree.SubElement(choices, "choice")
-            etree.SubElement(choice, "chainAvailable").text = chainAvailable.__str__()
-            etree.SubElement(choice, "description").text = description
-        return ret
-
     def proceedWithChoice(self, index, user_id):
         if user_id:
             agent_id = UserProfile.objects.get(user_id=int(user_id)).agent_id
             agent_id = str(agent_id)
             self.unit.setVariable("activeAgent", agent_id, None)
 
-        choicesAvailableForUnitsLock.acquire()
-        try:
-            del choicesAvailableForUnits[self.jobChainLink.UUID]
-        except KeyError:
-            pass
-        choicesAvailableForUnitsLock.release()
+        del self.JobChainLink.unit_choices[self.jobChainLink.UUID]
 
         # get the one at index, and go with it.
         _, _, replace_dict = self.choices[int(index)]
