@@ -290,7 +290,7 @@ $(function()
                     // get rid of select, etc.
                     self.$('.job-detail-actions').empty();
                   },
-                url: '/mcp/execute/',
+                url: '/api/approve-job/',
                 async: false
               });
             };

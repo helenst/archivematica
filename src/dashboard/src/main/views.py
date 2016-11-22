@@ -29,9 +29,8 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import last_modified
 from django.views.i18n import javascript_catalog
 
-from contrib.mcp.client import MCPClient
+from mcpserver import Client as MCPServerClient
 from main import models
-from lxml import etree
 from components import helpers
 from archivematicaFunctions import escape
 
@@ -81,16 +80,13 @@ def home(request):
 
 # TODO: hide removed elements
 def status(request):
-    client = MCPClient()
-    xml = etree.XML(client.list())
-
-    sip_count = len(xml.xpath('//choicesAvailableForUnits/choicesAvailableForUnit/unit/type[text()="SIP"]'))
-    transfer_count = len(xml.xpath('//choicesAvailableForUnits/choicesAvailableForUnit/unit/type[text()="Transfer"]'))
-    dip_count = len(xml.xpath('//choicesAvailableForUnits/choicesAvailableForUnit/unit/type[text()="DIP"]'))
-
-    response = {'sip': sip_count, 'transfer': transfer_count, 'dip': dip_count}
-
-    return helpers.json_response(response)
+    resp = MCPServerClient().list_jobs()
+    return helpers.json_response({
+        'count': {
+            'transfer': resp.transferCount,
+            'ingest': resp.ingestCount,
+        }
+    })
 
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

@@ -27,6 +27,7 @@ import re
 # Core Django, alphabetical
 from django.db.models import Q
 import django.http
+from django.views.decorators.http import require_http_methods
 
 # External dependencies, alphabetical
 from annoying.functions import get_object_or_None
@@ -34,11 +35,11 @@ from tastypie.authentication import ApiKeyAuthentication
 
 # This project, alphabetical
 import archivematicaFunctions
-from contrib.mcp.client import MCPClient
 from components.filesystem_ajax import views as filesystem_ajax_views
 from components.unit import views as unit_views
 from components import helpers
 from main import models
+from mcpserver import Client as MCPServerClient
 
 LOGGER = logging.getLogger('archivematica.dashboard')
 SHARED_DIRECTORY_ROOT = helpers.get_server_config_value('sharedDirectory')
@@ -221,7 +222,7 @@ def mark_hidden(request, unit_type, unit_uuid):
     return unit_views.mark_hidden(request, unit_type, unit_uuid)
 
 
-def start_transfer_api(request):
+def start_transfer(request):
     """
     Endpoint for starting a transfer if calling remote and using an API key.
     """
@@ -343,37 +344,24 @@ def unapproved_transfers(request):
     else:
         return django.http.HttpResponseNotAllowed(permitted_methods=['GET'])
 
+
+@require_http_methods(['POST'])
 def approve_transfer(request):
-    # Example: curl --data \
-    #   "username=mike&api_key=<API key>&directory=MyTransfer" \
-    #   http://127.0.0.1/api/transfer/approve
-    if request.method == 'POST':
-        auth_error = authenticate_request(request)
+    """
+    Example: curl --data "username=demo&api_key=<API key>&directory=MyTransfer" http://127.0.0.1/api/transfer/approve
+    """
+    auth_error = authenticate_request(request)
+    if auth_error is not None:
+        return helpers.json_response({'message': auth_error, 'error': True}, status_code=403)
 
-        response = {}
+    directory = request.POST.get('directory', '')
+    transfer_type = request.POST.get('type', 'standard')
+    directory = archivematicaFunctions.unicodeToStr(directory)
+    error, unit_uuid = approve_transfer_via_mcp(directory, transfer_type, request.user.id)
+    if error is not None:
+        return helpers.json_response({'message': error, 'error': True}, status_code=500)
 
-        if auth_error is None:
-            error = None
-
-            directory = request.POST.get('directory', '')
-            transfer_type = request.POST.get('type', 'standard')
-            directory = archivematicaFunctions.unicodeToStr(directory)
-            error, unit_uuid = approve_transfer_via_mcp(directory, transfer_type, request.user.id)
-
-            if error is not None:
-                response['message'] = error
-                response['error'] = True
-                return helpers.json_response(response, status_code=500)
-            else:
-                response['message'] = 'Approval successful.'
-                response['uuid'] = unit_uuid
-                return helpers.json_response(response)
-        else:
-            response['message'] = auth_error
-            response['error'] = True
-            return helpers.json_response(response, status_code=403)
-    else:
-        return django.http.HttpResponseNotAllowed(permitted_methods=['POST'])
+    return helpers.json_response({'message': 'Approval successful.', 'uuid': unit_uuid})
 
 
 def get_modified_standard_transfer_path(transfer_type=None):
@@ -392,60 +380,34 @@ def get_modified_standard_transfer_path(transfer_type=None):
 
 
 def approve_transfer_via_mcp(directory, transfer_type, user_id):
-    error = None
-    unit_uuid = None
-    if (directory != ''):
-        # assemble transfer path
-        modified_transfer_path = get_modified_standard_transfer_path(transfer_type)
+    """
+    TODO! user_id
+    """
+    if not directory:
+        return 'Please specify a transfer directory.', None
 
-        if modified_transfer_path is None:
-            error = 'Invalid transfer type.'
-        else:
-            db_transfer_path = os.path.join(modified_transfer_path, directory)
-            transfer_path = db_transfer_path.replace('%sharedPath%', SHARED_DIRECTORY_ROOT, 1)
-            # Ensure directories end with /
-            if os.path.isdir(transfer_path):
-                db_transfer_path = os.path.join(db_transfer_path, '')
-            # look up job UUID using transfer path
-            try:
-                job = models.Job.objects.filter(directory=db_transfer_path, currentstep=models.Job.STATUS_AWAITING_DECISION)[0]
-                unit_uuid = job.sipuuid
+    # Assemble transfer path
+    modified_transfer_path = get_modified_standard_transfer_path(transfer_type)
+    if modified_transfer_path is None:
+        return 'Invalid transfer type.', None
 
-                type_task_config_descriptions = {
-                    'standard': 'Approve standard transfer',
-                    'unzipped bag': 'Approve bagit transfer',
-                    'zipped bag': 'Approve zipped bagit transfer',
-                    'dspace': 'Approve DSpace transfer',
-                    'maildir': 'Approve maildir transfer',
-                    'TRIM': 'Approve TRIM transfer'
-                }
+    db_transfer_path = os.path.join(modified_transfer_path, directory)
+    transfer_path = db_transfer_path.replace('%sharedPath%', SHARED_DIRECTORY_ROOT, 1)
 
-                type_description = type_task_config_descriptions[transfer_type]
+    # Ensure directories end with /
+    if os.path.isdir(transfer_path):
+        db_transfer_path = os.path.join(db_transfer_path, '')
 
-                # use transfer type to fetch possible choices to execute
-                choices = models.MicroServiceChainChoice.objects.filter(choiceavailableatlink__currenttask__description=type_description)
-
-                # attempt to find appropriate choice
-                chain_to_execute = None
-                for choice in choices:
-                    if choice.chainavailable.description == 'Approve transfer':
-                        chain_to_execute = choice.chainavailable.pk
-
-                # execute choice if found
-                if chain_to_execute is not None:
-                    client = MCPClient()
-                    client.execute(job.pk, chain_to_execute, user_id)
-                else:
-                    error = 'Error: could not find MCP choice to execute.'
-
-            except Exception:
-                error = 'Unable to find unapproved transfer directory.'
-                # logging.exception(error)
-
+    # Look up transfer UUID and approve
+    try:
+        job = models.Job.objects.get(directory=db_transfer_path, currentstep=models.Job.STATUS_AWAITING_DECISION)
+    except models.Job.DoesNotExist:
+        return 'This transfer may not exist or may have been started already.', None
     else:
-        error = 'Please specify a transfer directory.'
-
-    return error, unit_uuid
+        approved = MCPServerClient().approve_transfer(job.sipuuid)
+        if not approved:
+            return 'The tranfer could not be approved.', None
+        return None, job.sipuuid
 
 
 def reingest(request, target):
@@ -527,13 +489,15 @@ def reingest(request, target):
         response = {'message': 'Approval successful.', 'reingest_uuid': reingest_uuid}
         return helpers.json_response(response)
 
-def copy_metadata_files_api(request):
+
+def copy_metadata_files(request):
     """
     Endpoint for adding metadata files to a SIP if using an API key.
     """
     sip_uuid = request.POST.get('sip_uuid')
     paths = request.POST.getlist('source_paths[]')
     return filesystem_ajax_views.copy_metadata_files(sip_uuid, paths)
+
 
 def get_levels_of_description(request):
     """
@@ -545,6 +509,7 @@ def get_levels_of_description(request):
     levels = models.LevelOfDescription.objects.all().order_by('sortorder')
     response = [{l.id: l.name} for l in levels]
     return helpers.json_response(response)
+
 
 def fetch_levels_of_description_from_atom(request):
     """
@@ -567,6 +532,7 @@ def fetch_levels_of_description_from_atom(request):
         return helpers.json_response(body, status_code=500)
     else:
         return get_levels_of_description(request)
+
 
 def path_metadata(request):
     """
@@ -625,3 +591,17 @@ def processing_configuration(request, name):
         return django.http.HttpResponse(content, content_type='text/xml')
     except IOError:
         raise django.http.Http404
+
+
+def approve_job(request):
+    try:
+        job_uuid = request.REQUEST['uuid']
+        choice_id = request.REQUEST['choice']
+        # TODO: obtain uid!
+    except KeyError:
+        raise django.http.Http404
+    else:
+        approved = MCPServerClient().approve_job(job_uuid, choice_id)
+        if approved:
+            return django.http.HttpResponse(status=202)
+        return django.http.HttpResponse(status=503)

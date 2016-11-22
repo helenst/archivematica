@@ -144,15 +144,6 @@ def _atom_levels_of_description_sort_adjust(level_id, sortorder='promote'):
     return True
 
 
-def dips_formset():
-    return modelformset_factory(
-        models.MicroServiceChoiceReplacementDic,
-        form=forms.MicroServiceChoiceReplacementDicForm,
-        extra=0,
-        can_delete=True
-    )
-
-
 def storage(request):
     try:
         locations = storage_service.get_location(purpose="AS")
