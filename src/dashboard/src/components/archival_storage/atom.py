@@ -24,16 +24,14 @@ from metsrw import METSDocument
 from storageService import extract_file
 from slumber.exceptions import SlumberHttpBaseException
 
-from components import helpers
-
+from main.models import DashboardSetting
 
 logger = logging.getLogger('archivematica.dashboard')
 
 
 def get_atom_client():
-    url = helpers.get_setting('dip_upload_atom_url')
-    key = helpers.get_setting('dip_upload_atom_key')
-    return AtomClient(url, key)
+    settings = DashboardSetting.objects.get_dict('upload-qubit_v0.0')
+    return AtomClient(settings.get('url'), settings.get('key'))
 
 
 class AtomMetadataUploadError(Exception):
