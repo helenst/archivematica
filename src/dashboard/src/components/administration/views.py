@@ -20,7 +20,6 @@ import logging
 import os
 import shutil
 import subprocess
-import sys
 
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -551,6 +550,9 @@ def general(request):
         initial=initial_data)
     checksum_form = ChecksumSettingsForm(request.POST or None, prefix='checksum algorithm',
         initial=initial_data)
+
+    # This field is only used during the installer, we can ignore it in this context
+    del storage_form.fields['storage_service_use_default_config']
 
     if interface_form.is_valid() and storage_form.is_valid() and checksum_form.is_valid():
         interface_form.save()
