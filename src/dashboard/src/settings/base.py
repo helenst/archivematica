@@ -33,6 +33,7 @@ CONFIG_MAPPING = {
     'elasticsearch_timeout': {'section': 'Dashboard', 'option': 'elasticsearch_timeout', 'type': 'float'},
     'gearman_server': {'section': 'Dashboard', 'option': 'gearman_server', 'type': 'string'},
     'shibboleth_authentication': {'section': 'Dashboard', 'option': 'shibboleth_authentication', 'type': 'boolean'},
+    'copy_files_timeout': {'section': 'Dashboard', 'option': 'copy_files_timeout', 'type': 'int'},
 
     # [Dashboard] (MANDATORY in production)
     'allowed_hosts': {'section': 'Dashboard', 'option': 'django_allowed_hosts', 'type': 'string'},
@@ -55,6 +56,7 @@ elasticsearch_server = 127.0.0.1:9200
 elasticsearch_timeout = 10
 gearman_server = 127.0.0.1:4730
 shibboleth_authentication = False
+copy_files_timeout = 300
 
 [client]
 user = archivematica
@@ -396,6 +398,8 @@ ALLOWED_HOSTS = ["*"]
 SECRET_KEY = "12345"
 
 ALLOW_USER_EDITS = True
+
+COPY_FILES_TIMEOUT = config.get('copy_files_timeout')
 
 SHIBBOLETH_AUTHENTICATION = config.get('shibboleth_authentication')
 if SHIBBOLETH_AUTHENTICATION:
