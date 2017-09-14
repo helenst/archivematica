@@ -51,6 +51,32 @@ CONFIG_MAPPING = {
     'db_pool_max_overflow': {'section': 'client', 'option': 'max_overflow', 'type': 'string'},
 }
 
+storage_timeouts = [
+    'storage_create_pipeline',
+    'storage_get_locations',
+    'storage_browse_location',
+    'storage_copy_files',
+    'storage_create_file',
+    'storage_get_file_info',
+    'storage_extract_file',
+    'storage_request_reingest',
+    'storage_request_file_deletion',
+    'storage_post_store_aip_callback',
+    'storage_get_file_metadata',
+    'storage_remove_transfer_files',
+    'storage_index_backlogged_transfer_contents',
+]
+
+# Timeouts
+for timeout in ['storage_default'] + storage_timeouts:
+    CONFIG_MAPPING[timeout + '_timeout'] = {
+        'section': 'timeouts',
+        'option': timeout,
+        'type': 'int',
+        'allow_none': True
+    }
+
+
 CONFIG_DEFAULTS = """[MCPClient]
 MCPArchivematicaServer = localhost:4730
 sharedDirectoryMounted = /var/archivematica/sharedDirectory/
@@ -69,6 +95,9 @@ temp_dir = /var/archivematica/sharedDirectory/tmp
 removableFiles = Thumbs.db, Icon, Icon\r, .DS_Store
 clamav_server = /var/run/clamav/clamd.ctl
 clamav_pass_by_reference = False
+
+[timeouts]
+storage_default = 5
 
 [client]
 user = archivematica
@@ -170,3 +199,9 @@ ELASTICSEARCH_SERVER = config.get('elasticsearch_server')
 ELASTICSEARCH_TIMEOUT = config.get('elasticsearch_timeout')
 CLAMAV_SERVER = config.get('clamav_server')
 CLAMAV_PASS_BY_REFERENCE = config.get('clamav_pass_by_reference')
+
+STORAGE_DEFAULT_TIMEOUT = config.get('storage_default_timeout', 5)
+for timeout in storage_timeouts:
+    name = timeout + '_timeout'
+    globals()[name.upper()] = config.get(name, STORAGE_DEFAULT_TIMEOUT)
+    # e.g. STORAGE_COPY_FILES_TIMEOUT = config.get('storage_copy_files_timeout', STORAGE_DEFAULT_TIMEOUT)

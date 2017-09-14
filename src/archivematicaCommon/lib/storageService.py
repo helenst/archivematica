@@ -106,7 +106,8 @@ def create_pipeline(create_default_locations=False, shared_path=None, api_userna
     LOGGER.info("Creating pipeline in storage service with %s", pipeline)
     url = _storage_service_url() + 'pipeline/'
     try:
-        response = _storage_api_session().post(url, json=pipeline)
+        timeout = settings.STORAGE_CREATE_PIPELINE_TIMEOUT
+        response = _storage_api_session(timeout).post(url, json=pipeline)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         LOGGER.warning('Unable to create Archivematica pipeline in storage service from %s because %s', pipeline, e, exc_info=True)
@@ -158,7 +159,8 @@ def get_location(path=None, purpose=None, space=None):
         'offset': 0,
     }
     while True:
-        response = _storage_api_session().get(url, params=params)
+        timeout = settings.STORAGE_GET_LOCATIONS_TIMEOUT
+        response = _storage_api_session(timeout).get(url, params=params)
         locations = response.json()
         return_locations += locations['objects']
         if not locations['meta']['next']:
@@ -176,7 +178,8 @@ def browse_location(uuid, path):
     path = base64.b64encode(path)
     url = _storage_service_url() + 'location/' + uuid + '/browse/'
     params = {'path': path}
-    response = _storage_api_session().get(url, params=params)
+    timeout = settings.STORAGE_BROWSE_LOCATION_TIMEOUT
+    response = _storage_api_session(timeout).get(url, params=params)
     browse = response.json()
     browse['entries'] = map(base64.b64decode, browse['entries'])
     browse['directories'] = map(base64.b64decode, browse['directories'])
@@ -217,7 +220,7 @@ def copy_files(source_location, destination_location, files):
 
     url = _storage_service_url() + 'location/' + destination_location['uuid'] + '/'
     try:
-        timeout = settings.COPY_FILES_TIMEOUT
+        timeout = settings.STORAGE_COPY_FILES_TIMEOUT
         response = _storage_api_session(timeout).post(url, json=move_files)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
@@ -266,7 +269,8 @@ def create_file(uuid, origin_location, origin_path, current_location,
 
     LOGGER.info("Creating file with %s", new_file)
     try:
-        session = _storage_api_session(timeout=None)
+        timeout = settings.STORAGE_CREATE_FILE_TIMEOUT
+        session = _storage_api_session(timeout)
         if update:
             new_file['reingest'] = pipeline['uuid']
             url = _storage_service_url() + 'file/' + uuid + '/'
@@ -305,7 +309,8 @@ def get_file_info(uuid=None, origin_location=None, origin_path=None,
         'offset': 0,
     }
     while True:
-        response = _storage_api_session().get(url, params=params)
+        timeout = settings.STORAGE_GET_FILE_INFO_TIMEOUT
+        response = _storage_api_session(timeout).get(url, params=params)
         files = response.json()
         return_files += files['objects']
         if not files['meta']['next']:
@@ -342,7 +347,8 @@ def extract_file(uuid, relative_path, save_path):
     """ Fetches `relative_path` from package with `uuid` and saves to `save_path`. """
     url = _storage_service_url() + 'file/' + uuid + '/extract_file/'
     params = {'relative_path_to_file': relative_path}
-    response = _storage_api_session().get(url, params=params, stream=True)
+    timeout = settings.STORAGE_EXTRACT_FILE_TIMEOUT
+    response = _storage_api_session(timeout).get(url, params=params, stream=True)
     chunk_size = 1024 * 1024
     with open(save_path, 'wb') as f:
         for chunk in response.iter_content(chunk_size):
@@ -377,7 +383,8 @@ def request_reingest(package_uuid, reingest_type, processing_config):
     }
     url = _storage_service_url() + 'file/' + package_uuid + '/reingest/'
     try:
-        response = _storage_api_session().post(url, json=api_request)
+        timeout = settings.STORAGE_REQUEST_REINGEST_TIMEOUT
+        response = _storage_api_session(timeout).post(url, json=api_request)
     except requests.ConnectionError:
         LOGGER.exception("Could not connect to storage service")
         return {'error': True, 'message': 'Could not connect to storage service'}
@@ -400,13 +407,15 @@ def request_file_deletion(uuid, user_id, user_email, reason_for_deletion):
         'user_id': user_id,
     }
     url = _storage_service_url() + 'file/' + uuid + '/delete_aip/'
-    response = _storage_api_session().post(url, json=api_request)
+    timeout = settings.STORAGE_REQUEST_FILE_DELETION_TIMEOUT
+    response = _storage_api_session(timeout).post(url, json=api_request)
     return response.json()
 
 
 def post_store_aip_callback(uuid):
     url = _storage_service_url() + 'file/' + uuid + '/send_callback/post_store/'
-    response = _storage_api_session().get(url)
+    timeout = settings.STORAGE_POST_STORE_AIP_CALLBACK_TIMEOUT
+    response = _storage_api_session(timeout).get(url)
     try:
         return response.json()
     except Exception:
@@ -415,7 +424,8 @@ def post_store_aip_callback(uuid):
 
 def get_file_metadata(**kwargs):
     url = _storage_service_url() + 'file/metadata/'
-    response = _storage_api_session().get(url, params=kwargs)
+    timeout = settings.STORAGE_GET_FILE_METADATA_TIMEOUT
+    response = _storage_api_session(timeout).get(url, params=kwargs)
     if 400 <= response.status_code < 500:
         raise ResourceNotFound("No file found for arguments: {}".format(kwargs))
     return response.json()
@@ -423,11 +433,13 @@ def get_file_metadata(**kwargs):
 
 def remove_files_from_transfer(transfer_uuid):
     url = _storage_service_url() + 'file/' + transfer_uuid + '/contents/'
-    _storage_api_session().delete(url)
+    timeout = settings.STORAGE_REMOVE_TRANSFER_FILES_TIMEOUT
+    _storage_api_session(timeout).delete(url)
 
 
 def index_backlogged_transfer_contents(transfer_uuid, file_set):
     url = _storage_service_url() + 'file/' + transfer_uuid + '/contents/'
-    response = _storage_api_session().put(url, json=file_set)
+    timeout = settings.STORAGE_INDEX_BACKLOGGED_TRANSFER_CONTENTS_TIMEOUT
+    response = _storage_api_session(timeout).put(url, json=file_set)
     if 400 <= response.status_code < 500:
         raise BadRequest("Unable to add files to transfer: {}".format(response.text))

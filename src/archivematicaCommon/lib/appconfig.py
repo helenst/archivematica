@@ -49,3 +49,7 @@ class Config(object):
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
             raise ImproperlyConfigured('The following configuration attribute '
                                        'must be defined: %s.' % attr)
+        except ValueError:
+            if attr_opts.get('allow_none') and self.config.get(**kwargs) == 'None':
+                return None
+            raise

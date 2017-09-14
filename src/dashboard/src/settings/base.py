@@ -33,7 +33,6 @@ CONFIG_MAPPING = {
     'elasticsearch_timeout': {'section': 'Dashboard', 'option': 'elasticsearch_timeout', 'type': 'float'},
     'gearman_server': {'section': 'Dashboard', 'option': 'gearman_server', 'type': 'string'},
     'shibboleth_authentication': {'section': 'Dashboard', 'option': 'shibboleth_authentication', 'type': 'boolean'},
-    'copy_files_timeout': {'section': 'Dashboard', 'option': 'copy_files_timeout', 'type': 'int'},
 
     # [Dashboard] (MANDATORY in production)
     'allowed_hosts': {'section': 'Dashboard', 'option': 'django_allowed_hosts', 'type': 'string'},
@@ -49,6 +48,31 @@ CONFIG_MAPPING = {
     'db_pool_max_overflow': {'section': 'client', 'option': 'max_overflow', 'type': 'string'},
 }
 
+storage_timeouts = [
+    'storage_create_pipeline',
+    'storage_get_locations',
+    'storage_browse_location',
+    'storage_copy_files',
+    'storage_create_file',
+    'storage_get_file_info',
+    'storage_extract_file',
+    'storage_request_reingest',
+    'storage_request_file_deletion',
+    'storage_post_store_aip_callback',
+    'storage_get_file_metadata',
+    'storage_remove_transfer_files',
+    'storage_index_backlogged_transfer_contents',
+]
+
+# Timeouts
+for timeout in ['storage_default'] + storage_timeouts:
+    CONFIG_MAPPING[timeout + '_timeout'] = {
+        'section': 'timeouts',
+        'option': timeout,
+        'type': 'int',
+        'allow_none': True
+    }
+
 CONFIG_DEFAULTS = """[Dashboard]
 shared_directory = /var/archivematica/sharedDirectory/
 watch_directory = /var/archivematica/sharedDirectory/watchedDirectories/
@@ -56,7 +80,11 @@ elasticsearch_server = 127.0.0.1:9200
 elasticsearch_timeout = 10
 gearman_server = 127.0.0.1:4730
 shibboleth_authentication = False
-copy_files_timeout = 300
+
+[timeouts]
+storage_default = 5
+storage_copy_files = 300
+storage_create_file = None
 
 [client]
 user = archivematica
@@ -397,9 +425,14 @@ ELASTICSEARCH_TIMEOUT = config.get('elasticsearch_timeout')
 ALLOWED_HOSTS = ["*"]
 SECRET_KEY = "12345"
 
+STORAGE_DEFAULT_TIMEOUT = config.get('storage_default_timeout', 5)
+for timeout in storage_timeouts:
+    name = timeout + '_timeout'
+    globals()[name.upper()] = config.get(name, STORAGE_DEFAULT_TIMEOUT)
+    # e.g. STORAGE_COPY_FILES_TIMEOUT = config.get('storage_copy_files_timeout', STORAGE_DEFAULT_TIMEOUT)
+
 ALLOW_USER_EDITS = True
 
-COPY_FILES_TIMEOUT = config.get('copy_files_timeout')
 
 SHIBBOLETH_AUTHENTICATION = config.get('shibboleth_authentication')
 if SHIBBOLETH_AUTHENTICATION:
