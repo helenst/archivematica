@@ -3,3 +3,11 @@
   width: 100%;
   padding: 15px 10px;
 }
+
+.table-hover tr:hover {
+  cursor: pointer;
+}
+
+.table-responsive > .row {
+  margin: 0;
+}

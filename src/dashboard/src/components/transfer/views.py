@@ -129,7 +129,16 @@ def component(request, uuid):
 
 def status(request, uuid=None):
     # Equivalent to: "SELECT SIPUUID, MAX(createdTime) AS latest FROM Jobs GROUP BY SIPUUID
-    objects = models.Job.objects.filter(hidden=False, subjobof='', unittype__exact='unitTransfer').values('sipuuid').annotate(timestamp=Max('createdtime')).exclude(sipuuid__icontains='None').order_by('-timestamp')
+    objects = models.Job.objects.filter(
+        hidden=False, subjobof='', unittype__exact='unitTransfer'
+    ).values(
+        'sipuuid',
+        'currentstep',
+    ).annotate(
+        timestamp=Max('createdtime')
+    ).exclude(
+        sipuuid__icontains='None'
+    ).order_by('-timestamp')
     mcp_available = False
     try:
         client = MCPClient()
@@ -138,6 +147,7 @@ def status(request, uuid=None):
     except Exception:
         pass
 
+    statuses = dict(models.Job.STATUS)
     def encoder(obj):
         items = []
         for item in obj:
@@ -149,6 +159,7 @@ def status(request, uuid=None):
             item['timestamp'] = calendar.timegm(item['timestamp'].timetuple())
             item['uuid'] = item['sipuuid']
             item['id'] = item['sipuuid']
+            item['currentstep_label'] = str(statuses[item['currentstep']])
             del item['sipuuid']
             item['jobs'] = []
             for job in jobs:

@@ -189,7 +189,8 @@ JobCollection = Backbone.Collection.extend({
 
 var BaseSipView = Backbone.View.extend({
 
-  className: 'sip',
+  className: 'sip sip-row',
+  tagName:'tr',
 
   events: {
     'click .sip-detail-directory': 'toggleJobs',
@@ -400,12 +401,12 @@ var BaseSipView = Backbone.View.extend({
     {
       // I feel like this should go somewhere else but it's ok for now.
       var icons = new Object;
-      icons[this.model.statuses['STATUS_UNKNOWN']] = 'bell.png',
-      icons[this.model.statuses['STATUS_AWAITING_DECISION']] = 'bell.png',
-      icons[this.model.statuses['STATUS_COMPLETED_SUCCESSFULLY']] = 'accept.png',
-      icons[this.model.statuses['STATUS_EXECUTING_COMMANDS']] = 'arrow_refresh.png',
-      icons[this.model.statuses['STATUS_FAILED']] = 'cancel.png',
-      icons[this.model.statuses['STATUS_REJECTED']] = 'control_stop_blue.png'
+      icons[this.model.statuses['STATUS_UNKNOWN']] = ['bell', 'muted']
+      icons[this.model.statuses['STATUS_AWAITING_DECISION']] = ['bell', 'warning']
+      icons[this.model.statuses['STATUS_COMPLETED_SUCCESSFULLY']] = ['check-circle', 'success']
+      icons[this.model.statuses['STATUS_EXECUTING_COMMANDS']] = ['sync', 'info']
+      icons[this.model.statuses['STATUS_FAILED']] = ['cancel', 'danger']
+      icons[this.model.statuses['STATUS_REJECTED']] = ['stop', 'danger']
 
       var job = this.model.jobs.first();
       var currentstep = job.get('currentstep');
@@ -418,12 +419,12 @@ var BaseSipView = Backbone.View.extend({
         currentstep = this.model.statuses['STATUS_FAILED'];
       }
 
-      var icon = 'accept.png';
+      var icon = ['bell', 'muted'];
       if (icons.hasOwnProperty(currentstep)) {
         icon = icons[currentstep];
       }
 
-      return '<img src="/media/images/' + icon + '"/>';
+      return '<i class="fa fa-lg fa-' + icon[0] + ' ' + 'text-' + icon[1] + '"></i>';
     }
 });
 

@@ -5,9 +5,10 @@
 
 {% block extra_css %}
 <link href="{% static 'vendor/select2/select2.css' %}" rel="stylesheet" type="text/css" />
-<link type="text/css" rel="stylesheet" media="all" href="{% static 'css/backbone-file-explorer.css' %}" />
-<link type="text/css" rel="stylesheet" media="all" href="{% static 'css/directory_picker.css' %}" />
-<link type="text/css" rel="stylesheet" media="all" href="{% static 'css/transfer_grid.css' %}" />
+<link rel="stylesheet" href="{% static 'css/backbone-file-explorer.css' %}" />
+<link rel="stylesheet" href="{% static 'css/directory_picker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/transfer_grid.css' %}" />
+<link rel="stylesheet" href="https://cdn.datatables.net/v/bs/jq-2.2.4/dt-1.10.15/b-1.3.1/r-2.1.1/datatables.min.css"/>
 {% endblock %}
 
 {% block extra_js %}
@@ -66,32 +67,58 @@ Transfers
       </div>
       <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#tab_org" data-toggle="tab">{% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} Transfers ({{ org_uploads_count }})</a></li>
+          <li class="active">
+            <a href="#tab_org" data-toggle="tab">
+              Transfers</a>
+          </li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane active table-responsive" id="tab_org">
-            {#% include 'parts/transfer_table.html' with uploads=org_uploads table_id='org_transfers' %#}
-            <div id="sip-container">
-              <div style='float:right'>
-                <span class='grid-pager-previous-area'></span>
-                <span class='grid-pager-next-area'></span>
-                <span class='grid-pager-summary-area'></span>
-              </span>
-              </div>
-              <div id="sip-header">
-                <div id="sip-header-directory">{% trans "Transfer" %}</div>
-                <div id="sip-header-uuid">{% trans "UUID" %}</div>
-                <div id="sip-header-timestamp">{% trans "Transfer start time" %}</div>
-                <div id="sip-header-actions">
-                    <a class="btn_remove_all_sips" href="#" title="{% trans 'Remove all completed' %}"><span>&nbsp;</span></a>
+            <div class="row">
+              <div class="col-sm-12">
+                <table id="sip-container" class="table table-hover table-striped dataTable">
+                  <thead id="sip-header">
+                    <tr>
+                      <th id="sip-header-directory">{% trans "Transfer" %}</th>
+                      <th id="sip-header-status">{% trans "Status" %}</th>
+                      <th id="sip-header-uuid">{% trans "UUID" %}</th>
+                      <th id="sip-header-timestamp">{% trans "Transfer start time" %}</th>
+                      <th id="sip-header-actions">
+                          <a class="btn_remove_all_sips" href="#" title="{% trans 'Remove all completed' %}"><span>&nbsp;</span></a>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="sip-body">
+                  </tbody>
+                </table>
+
+
+                {% comment %}
+                <div id="sip-container">
+                  <div style='float:right'>
+                    <span class='grid-pager-previous-area'></span>
+                    <span class='grid-pager-next-area'></span>
+                    <span class='grid-pager-summary-area'></span>
+                  </span>
+                  </div>
+                  <div id="sip-header">
+                    <div id="sip-header-directory">{% trans "Transfer" %}</div>
+                    <div id="sip-header-uuid">{% trans "UUID" %}</div>
+                    <div id="sip-header-timestamp">{% trans "Transfer start time" %}</div>
+                    <div id="sip-header-actions">
+                        <a class="btn_remove_all_sips" href="#" title="{% trans 'Remove all completed' %}"><span>&nbsp;</span></a>
+                    </div>
+                  </div>
+                  <div id="sip-body">
+                  </div>
+                  <div style='float:right'>
+                    <span class='grid-pager-previous-area'></span>
+                    <span class='grid-pager-next-area'></span>
+                    <span class='grid-pager-summary-area'></span>
+                  </div>
                 </div>
-              </div>
-              <div id="sip-body">
-              </div>
-              <div style='float:right'>
-                <span class='grid-pager-previous-area'></span>
-                <span class='grid-pager-next-area'></span>
-                <span class='grid-pager-summary-area'></span>
+                {% endcomment %}
+
               </div>
             </div>
           </div>
@@ -103,6 +130,19 @@ Transfers
   <!-- Templates -->
 
   <script type="text/template" id="sip-template">
+      <td class="sip-detail-directory"><%= directory %></td>
+      <td class="sip-detail-status"><%= this.getIcon() %></td>
+      <td class="sip-detail-uuid"><%= uuid %></td>
+      <td class="sip-detail-timestamp"><%= this.getIngestStartTime() %></td>
+      <td class="sip-detail-actions">
+        <a class="btn_show_metadata" href="#" title="{% trans 'Metadata' %}"><span>{% trans "Metadata" %}</span></a>
+        <a class="btn_remove_sip" href="#" title="{% trans 'Remove' %}"><span>{% trans "Remove" %}</span></a>
+      </td>
+    {% comment %}
+    {#<tr class="sip-detail-job-container"><td colspan="5"></td></tr>#}
+    <tr {#onclick="window.open('{% url 'transfers:detail' upload.pk %}','_self')"#} 
+      class="pointer-row sip-row" id="sip-row-<%= uuid %>">
+    </tr>
     <div class="sip-row" id="sip-row-<%= uuid %>">
       <div class="sip-detail-icon-status"><%= this.getIcon() %></div>
       <div class="sip-detail-directory">
@@ -117,6 +157,7 @@ Transfers
       </div>
     </div>
     <div class="sip-detail-job-container"></div>
+  {% endcomment %}
   </script>
 
   <script type="text/template" id="microservice-group-template">
