@@ -37,5 +37,6 @@ urlpatterns = [
     url(r'^file/', include('components.file.urls')),
     url(r'^access/', include('components.access.urls')),
     url(r'^backlog/', include('components.backlog.urls')),
+    url(r'^newui/', include('newui.urls', namespace='newui')),
     url(r'', include('main.urls'))
 ]

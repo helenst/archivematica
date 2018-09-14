@@ -307,6 +307,9 @@ INSTALLED_APPS = [
 
     # Support long (>30 characters) usernames
     'longerusername',
+
+    # ui improvements
+    'newui',
 ]
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
