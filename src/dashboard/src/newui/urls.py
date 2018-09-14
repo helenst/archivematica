@@ -5,4 +5,5 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.dashboard, name='dashboard'),
+    url(r'^transfers/$', views.transfers, name='transfers'),
 ]

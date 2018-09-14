@@ -4,6 +4,7 @@
 
   <head>
     {% include "newui/head.html" %}
+    {% block extra_css %}{% endblock %}
   </head>
 
 <body class="skin-green sidebar-mini">
@@ -11,17 +12,24 @@
   {% include "newui/header.html" %}
   {% include "newui/left_sidebar.html" %}
 
-  <div class="container">
+  <div class="content-wrapper">
 
-    <div class="starter-template">
-      {% block content %}
-      {% endblock content %}
-    </div>
+    <section class="content-header">
+      <h1>{% block h1_title %}{% endblock %}</h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      {#<div id="messages">{% include 'transfers/messages.html' %}</div>#}
+
+    {% block content %}{% endblock %}
+    </section>
 
   </div><!-- /.container -->
 
   {% include "newui/js.html" %}
+  {% block extra_js %}{% endblock %}
 
 </body>
 </html>
-
