@@ -11,3 +11,71 @@
 .table-responsive > .row {
   margin: 0;
 }
+
+.job > div {
+  padding: 2px 5px;
+  float: left;
+  line-height: 18px;
+}
+
+.job-detail-microservice {
+  width: 630px;
+  border-right: 1px dotted #bbb;
+}
+
+.job-detail-microservice > .job-type-label {
+  margin-left: 20px;
+}
+
+.job-detail-microservice > .job-type-label:after {
+  content: ':';
+}
+
+.job-detail-currentstep {
+  width: 180px;
+  border-right: 1px dotted #bbb;
+}
+
+.job-detail-actions > a {
+  display: block;
+  float: left;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center left;
+}
+
+.job-detail-actions > a > span {
+  display: none;
+}
+
+.job-detail-actions > select {
+  width: 80px;
+  height: auto;
+  line-height: normal;
+  padding: 0;
+  font-size: 13px;
+  margin-left: 8px;
+  border: 1px solid #999;
+}
+
+.job-detail-actions > a { margin-left: 4px; }
+.job-detail-actions > .btn_show_tasks { background-image: url(/media/images/cog.png); }
+.job-detail-actions > .btn_normalization_report { background-image: url(/media/images/table_edit.png); }
+.job-detail-actions > .btn_as_upload { background-image: url(/media/images/table_edit.png); }
+.job-detail-actions > .btn_atk_upload { background-image: url(/media/images/table_edit.png); }
+
+.job-detail-microservice > .title {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  background-color: Green;
+  left: 0px;
+  top: 0px;
+  text-align: left;
+}
+
+.job-detail-currentstep > div {
+  margin: 4px 0;
+}

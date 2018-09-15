@@ -135,7 +135,7 @@ $(function()
 
     window.JobView = BaseJobView.extend({
 
-      className: 'job',
+      className: 'job clearfix',
 
       events: {
         'click .btn_show_tasks': 'showTasks',

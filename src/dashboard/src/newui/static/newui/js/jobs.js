@@ -429,7 +429,7 @@ var BaseSipView = Backbone.View.extend({
 
 var MicroserviceGroupView = Backbone.View.extend({
 
-  className: 'microservicegroup',
+  className: 'microservicegroup panel-group',
 
   initialize: function()
     {
