@@ -1,0 +1,125 @@
+{% extends "newui/base.html" %}
+
+{% load staticfiles %}
+{% load i18n %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/backbone-file-explorer.css' %}" />
+<link rel="stylesheet" href="{% static 'css/directory_picker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/transfer_grid.css' %}" />
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript" src="{% static 'js/misc.js' %}"></script>
+  <script type="text/javascript" src="{% static 'newui/js/jobs.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/online.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/transfer.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/vendor/base64.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/build/transfer_browser.js' %}"></script>
+
+  <script type="text/javascript">
+
+    $(document).ready(function()
+      {
+        {% if polling_interval %}
+          window.pollingInterval = {{ polling_interval }};
+        {% endif %}
+
+        window.Sips = new SipCollection;
+        window.App = new AppView({
+          statusUrl: '/transfer/status/{{ uuid }}',
+          uid: {{ user.id }}
+        });
+
+        window.SipView = BaseSipView.extend({
+          template: _.template($('#sip-template').html()),
+
+          initialize: function()
+            {
+              this.uid = this.options.uid;
+
+              _.bindAll(this, 'render', 'update', 'updateIcon');
+              this.model.view = this;
+              this.model.bind('change:timestamp', this.update);
+            },
+        });
+      });
+
+    window.microservices_help = {
+      {% for x, y in microservices_help.iteritems %}
+        '{{ x }}': '{{ y }}',
+      {% endfor %}
+    };
+
+  </script>
+{% endblock %}
+
+{% block h1_title %}
+Transfer progress
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <div id="sip-container">
+        <div id="sip-body">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Templates -->
+
+  <script type="text/template" id="sip-template">
+    <div class="box box-primary">
+      <div class="box-body">
+        <dl class="dl-horizontal">
+          <dt id="sip-header-directory">{% trans "Transfer" %}</dt>
+          <dd class="sip-detail-directory"><%= directory %></dd>
+
+          <dt id="sip-header-status">{% trans "Status" %}</dt>
+          <dd class="sip-detail-status"><%= this.getIcon() %></dd>
+
+          <dt id="sip-header-uuid">{% trans "UUID" %}</dt>
+          <dd class="sip-detail-uuid"><%= uuid %></dd>
+
+          <dt id="sip-header-timestamp">{% trans "Transfer start time" %}</dt>
+          <dd class="sip-detail-timestamp"><%= this.getIngestStartTime() %></dd>
+        </dl>
+
+        <div class="sip-detail-job-container"></div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/template" id="microservice-group-template">
+    <div class="microservice-group">
+      &nbsp;<span class="microservice-group-arrow">&#x25B8;</span>
+      <span class="microservice-group-name">{% trans "Microservice" %}: <%= name %></span>
+    </div>
+  </script>
+
+  <script type="text/template" id="job-template">
+    <div class="job-detail-microservice">
+      <span class="job-type-label">{% trans "Job" %}</span>
+      <span title="<%= uuid %>"><%= type %></span>
+      <% tmp = window.microservices_help[type]; %>
+      <% if (tmp !== undefined) { %>
+        [<a href="#" title="<%= tmp %>">?</a>]
+      <% } %>
+    </div>
+    <div class="job-detail-currentstep" data-currentstep="<%= currentstep %>">
+      <span title="<%= new Date(timestamp * 1000).getArchivematicaDateTime() %> / <%= timestamp %>"><%= currentstep_label %></span>
+    </div>
+    <div class="job-detail-actions">
+      <a class="btn_show_tasks" href="#" title="{% trans 'Tasks' %}"><span>{% trans "Tasks" %}</span></a>
+    </div>
+  </script>
+
+  <script type="text/template" id="status-template">
+    <div id="status-bullet">
+      <span>{% trans "Initializing..." %}</span>
+      <img src="{% static 'images/bullet_delete.png' %}" />
+    </div>
+  </script>
+{% endblock content %}

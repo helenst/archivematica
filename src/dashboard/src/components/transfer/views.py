@@ -139,6 +139,9 @@ def status(request, uuid=None):
     ).exclude(
         sipuuid__icontains='None'
     ).order_by('-timestamp')
+
+    if uuid:
+        objects = objects.filter(sipuuid=uuid)
     mcp_available = False
     try:
         client = MCPClient()

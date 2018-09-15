@@ -46,6 +46,7 @@ $(function()
     window.SipView = BaseSipView.extend({
 
       template: _.template($('#sip-template').html()),
+      tagName:'tr',
 
       initialize: function()
         {

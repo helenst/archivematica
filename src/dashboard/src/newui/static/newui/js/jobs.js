@@ -190,14 +190,13 @@ JobCollection = Backbone.Collection.extend({
 var BaseSipView = Backbone.View.extend({
 
   className: 'sip sip-row',
-  tagName:'tr',
 
   events: {
-    'click .sip-detail-directory': 'toggleJobs',
-    'click .sip-detail-uuid': 'toggleJobs',
-    'click .sip-detail-timestamp': 'toggleJobs',
-    'click .sip-detail-actions > .btn_show_panel': 'openPanel',
-    'click .sip-detail-actions > .btn_show_metadata': 'openPanel',
+    //'click .sip-detail-directory': 'toggleJobs',
+    //'click .sip-detail-uuid': 'toggleJobs',
+    //'click .sip-detail-timestamp': 'toggleJobs',
+    //'click .sip-detail-actions > .btn_show_panel': 'openPanel',
+    //'click .sip-detail-actions > .btn_show_metadata': 'openPanel',
     'click .sip-detail-actions > .btn_remove_sip': 'remove'
   },
 
@@ -402,7 +401,7 @@ var BaseSipView = Backbone.View.extend({
       // I feel like this should go somewhere else but it's ok for now.
       var icons = new Object;
       icons[this.model.statuses['STATUS_UNKNOWN']] = ['bell', 'muted']
-      icons[this.model.statuses['STATUS_AWAITING_DECISION']] = ['bell', 'warning']
+      icons[this.model.statuses['STATUS_AWAITING_DECISION']] = ['question-circle', 'warning']
       icons[this.model.statuses['STATUS_COMPLETED_SUCCESSFULLY']] = ['check-circle', 'success']
       icons[this.model.statuses['STATUS_EXECUTING_COMMANDS']] = ['sync', 'info']
       icons[this.model.statuses['STATUS_FAILED']] = ['cancel', 'danger']
@@ -591,7 +590,7 @@ var BaseJobView = Backbone.View.extend({
           $('#big-choice-select-body').append($proxySelect);
 
           // style clone as Select2
-          $proxySelect.select2();
+          //$proxySelect.select2();
 
           // proxy selections to action selector
           $proxySelect.change(function()
